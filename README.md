@@ -6,12 +6,12 @@ API untuk validasi QR code tiket event dengan sistem reservasi dan check-in. Pro
 
 API ini menyediakan sistem manajemen tiket event yang lengkap dengan fitur:
 
-- ✅ Validasi QR code tiket
-- 🎟️ Reservasi tiket untuk event
-- 🔐 Autentikasi user dengan role-based access (Admin & Attendee)
-- 📊 Manajemen event (CRUD)
-- ✔️ Check-in tiket menggunakan QR code
-- 🚫 Pembatalan tiket
+- Validasi QR code tiket
+- Reservasi tiket untuk event
+- Autentikasi user dengan role-based access (Admin & Attendee)
+- Manajemen event (CRUD)
+- Check-in tiket menggunakan QR code
+- Pembatalan tiket
 
 ## 🛠️ Tech Stack
 
@@ -546,7 +546,7 @@ ikutan-{unique_id}-{base64_encoded_payload}
 | **attendee** | Reserve tickets, view own tickets, cancel tickets                                                |
 | **admin**    | All attendee permissions + Create/Update/Delete events, Check-in tickets, View all event tickets |
 
-## 🧪 Testing dengan Postman
+## Testing dengan Postman
 
 1. **Register** sebagai admin dan attendee
 2. **Login** untuk mendapatkan token
@@ -591,7 +591,7 @@ ikutan-{unique_id}-{base64_encoded_payload}
 - Validasi status: valid / invalid / already used
 - Encoding informasi user dan event dalam QR code
 
-### 🎟️ Sistem Reservasi
+### Sistem Reservasi
 
 - Pembatasan jumlah tiket per event
 - Pencegahan double booking
@@ -616,7 +616,7 @@ Semua response menggunakan format standar:
 }
 ```
 
-## 🚧 Catatan Penting
+## Catatan Penting
 
 - ✅ Project ini **hanya API backend** (Part 1)
 - ✅ Belum ada implementasi mobile/frontend
@@ -624,7 +624,7 @@ Semua response menggunakan format standar:
 - ✅ Struktur project clean dan terorganisir
 - ✅ Dokumentasi lengkap
 
-## 📦 Dependencies Utama
+## Dependencies Utama
 
 ```json
 {

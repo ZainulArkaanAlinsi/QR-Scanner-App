@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🎫 QR Code Ticket Scanning API
 
 API untuk validasi QR code tiket event dengan sistem reservasi dan check-in. Proyek ini merupakan bagian dari SKL #1 - Part 1 (Backend API Only).
@@ -644,3 +645,7 @@ This project is open-sourced software licensed under the [MIT license](https://o
 ---
 
 **Note**: Pastikan untuk menjalankan `php artisan migrate` dan `php artisan storage:link` sebelum testing API.
+=======
+# QR-Scanner-App
+Requirements  Create an API that can: Validate QR codes Return appropriate responses (valid / invalid / already used) Use proper HTTP methods and status codes Structure the project cleanly and logically Provide clear API documentation (endpoint list &amp; request/response format)
+>>>>>>> 2a6a576413f8e5e417683c9418cee33b2350da25

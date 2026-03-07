@@ -7,6 +7,8 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   bool _initialized = false;
+  bool _isObscure = true;
+  bool _isObscureConfirm = true;
 
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
@@ -14,6 +16,18 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoggedIn => _user != null;
   bool get isAdmin => _user?.isAdmin ?? false;
   bool get initialized => _initialized;
+  bool get isObscure => _isObscure;
+  bool get isObscureConfirm => _isObscureConfirm;
+
+  void toggleObscure() {
+    _isObscure = !_isObscure;
+    notifyListeners();
+  }
+
+  void toggleObscureConfirm() {
+    _isObscureConfirm = !_isObscureConfirm;
+    notifyListeners();
+  }
 
   /// Called on app start — tries to restore session from SharedPreferences
   Future<void> initialize() async {

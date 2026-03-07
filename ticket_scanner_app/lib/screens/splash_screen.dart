@@ -28,11 +28,16 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _checkAuth() async {
+    // Artificial delay for splash experience (as per transcription "muter-muter" buffer)
     await Future.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;
+
     final auth = context.read<AuthProvider>();
     await auth.initialize();
+
     if (!mounted) return;
+
+    // As per transcription: buffer checks if authenticated or not
     if (auth.isLoggedIn) {
       context.go('/home');
     } else {

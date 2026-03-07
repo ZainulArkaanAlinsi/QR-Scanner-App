@@ -3,8 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/loading_button.dart';
-import '../widgets/error_card.dart';
 import '../widgets/input_field.dart';
+import '../core/utils/validator.dart';
+import '../core/utils/snackbar_helper.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,7 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
-  bool _obscure = true;
 
   @override
   void dispose() {
@@ -28,10 +28,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
     final auth = context.read<AuthProvider>();
-    final ok = await auth.login(_emailCtrl.text.trim(), _passCtrl.text);
-    if (ok && mounted) {
-      context.go('/home');
+    final success = await auth.login(_emailCtrl.text.trim(), _passCtrl.text);
+
+    if (mounted) {
+      if (success) {
+        context.go('/home');
+      } else {
+        SnackBarHelper.error(context, auth.error ?? 'Login failed');
+      }
     }
   }
 
@@ -46,7 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 24),
-              // Header
               Center(
                 child: Container(
                   width: 80,
@@ -73,24 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               const SizedBox(height: 32),
-
-              // Error
-              Consumer<AuthProvider>(
-                builder: (_, auth, __) {
-                  if (auth.error == null) return const SizedBox.shrink();
-                  return Column(
-                    children: [
-                      ErrorCard(
-                        message: auth.error!,
-                        onDismiss: auth.clearError,
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                  );
-                },
-              ),
-
-              // Form
               Form(
                 key: _formKey,
                 child: Column(
@@ -100,27 +87,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _emailCtrl,
                       keyboardType: TextInputType.emailAddress,
                       icon: Icons.email_outlined,
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return 'Email is required';
-                        if (!v.contains('@')) return 'Enter a valid email';
-                        return null;
-                      },
+                      validator: Validator.email,
                     ),
                     const SizedBox(height: 16),
-                    AppInputField(
-                      label: 'Password',
-                      controller: _passCtrl,
-                      obscure: _obscure,
-                      icon: Icons.lock_outline,
-                      suffix: IconButton(
-                        icon: Icon(
-                            _obscure ? Icons.visibility_off : Icons.visibility),
-                        onPressed: () => setState(() => _obscure = !_obscure),
-                      ),
-                      validator: (v) {
-                        if (v == null || v.isEmpty)
-                          return 'Password is required';
-                        return null;
+                    Consumer<AuthProvider>(
+                      builder: (context, auth, child) {
+                        return AppInputField(
+                          label: 'Password',
+                          controller: _passCtrl,
+                          obscure: auth.isObscure,
+                          icon: Icons.lock_outline,
+                          suffix: IconButton(
+                            icon: Icon(auth.isObscure
+                                ? Icons.visibility_off
+                                : Icons.visibility),
+                            onPressed: auth.toggleObscure,
+                          ),
+                          validator: Validator.password,
+                        );
                       },
                     ),
                     const SizedBox(height: 28),
@@ -128,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       builder: (_, auth, __) => LoadingButton(
                         label: 'Sign In',
                         isLoading: auth.isLoading,
-                        onPressed: _submit,
+                        onPressed: auth.isLoading ? null : _submit,
                         icon: Icons.login,
                       ),
                     ),

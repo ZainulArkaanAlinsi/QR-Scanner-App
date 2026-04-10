@@ -1,7 +1,7 @@
 class EventModel {
   final String id;
   final String name;
-  final String description;
+  final String desc;
   final DateTime date;
   final List<String> images;
   final int maxReservation;
@@ -10,7 +10,7 @@ class EventModel {
   EventModel({
     required this.id,
     required this.name,
-    required this.description,
+    required this.desc,
     required this.date,
     required this.images,
     required this.maxReservation,
@@ -27,7 +27,7 @@ class EventModel {
     return EventModel(
       id: json['id']?.toString() ?? '',
       name: json['name'] ?? '',
-      description: json['description'] ?? '',
+      desc: json['desc'] ?? '',
       date: DateTime.tryParse(json['date'] ?? '') ?? DateTime.now(),
       images: imgs,
       maxReservation: json['max_reservation'] ?? 0,

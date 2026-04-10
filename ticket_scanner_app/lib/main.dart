@@ -11,9 +11,10 @@ import 'screens/home_screen.dart';
 import 'screens/event_detail_screen.dart';
 import 'screens/my_tickets_screen.dart';
 import 'screens/qr_scanner_screen.dart';
+import 'screens/event_form_screen.dart';
 
 import 'core/themes/app_theme.dart';
-import 'core/constants.dart';
+import 'core/utils/const.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,13 @@ final _router = GoRouter(
     ),
     GoRoute(path: '/my-tickets', builder: (_, __) => const MyTicketsScreen()),
     GoRoute(path: '/scanner', builder: (_, __) => const QrScannerScreen()),
+    GoRoute(
+        path: '/events/create', builder: (_, __) => const EventFormScreen()),
+    GoRoute(
+      path: '/events/edit/:id',
+      builder: (_, state) =>
+          EventFormScreen(eventId: state.pathParameters['id']),
+    ),
   ],
 );
 
@@ -55,7 +63,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TicketProvider()),
       ],
       child: MaterialApp.router(
-        title: kAppName,
+        title: Const.appName,
         debugShowCheckedModeBanner: false,
         routerConfig: _router,
         theme: AppTheme.lightTheme,

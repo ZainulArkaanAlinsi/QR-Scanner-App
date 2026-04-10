@@ -94,6 +94,37 @@ class ApiClient {
     }
   }
 
+  static Future<ApiResponse> postMultipart(
+    String endpoint, {
+    Map<String, String>? body,
+    List<http.MultipartFile>? files,
+  }) async {
+    final token = await _getToken();
+    try {
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$kBaseUrl$endpoint'),
+      );
+
+      request.headers.addAll(_buildHeaders(token: token));
+      // MultipartRequest headers usually shouldn't have Content-Type set manually
+      request.headers.remove('Content-Type');
+
+      if (body != null) request.fields.addAll(body);
+      if (files != null) request.files.addAll(files);
+
+      final streamedRes = await request.send();
+      final res = await http.Response.fromStream(streamedRes);
+      return _parse(res);
+    } catch (e) {
+      return ApiResponse(
+        status: 'Error',
+        message: 'Network error: ${e.toString()}',
+        data: null,
+      );
+    }
+  }
+
   static ApiResponse _parse(http.Response res) {
     try {
       final json = jsonDecode(res.body);

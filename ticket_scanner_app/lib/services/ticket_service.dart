@@ -18,16 +18,18 @@ class TicketService {
     return await ApiClient.patch('/ticket/$ticketId/cancel');
   }
 
-  /// PATCH /ticket/{ticketId}/checkin — check in by QR code (admin)
+  /// PATCH /checkin — check in by QR code (admin)
   /// [code] = the full QR code string scanned from camera
-  static Future<ApiResponse> checkinTicket(
-    String ticketId,
-    String code,
-  ) async {
+  static Future<ApiResponse> checkinTicket(String code) async {
     return await ApiClient.patch(
-      '/ticket/$ticketId/checkin',
+      '/checkin',
       body: {'code': code},
     );
+  }
+
+  /// GET /event/{eventId}/ticket — list tickets for an event (admin)
+  static Future<ApiResponse> getTicketsByEvent(String eventId) async {
+    return await ApiClient.get('/event/$eventId/ticket');
   }
 
   /// Parse list of tickets from response data

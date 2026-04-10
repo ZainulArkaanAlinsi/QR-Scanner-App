@@ -85,7 +85,7 @@ class TicketProvider extends ChangeNotifier {
     // We need a ticketId — but the API actually looks up ticket by code from body.
     // Looking at the controller: $ticket = Ticket::where('code', $code)->first()
     // So any ticketId works as long as we send the code. We use '0' as placeholder.
-    final res = await TicketService.checkinTicket('0', code);
+    final res = await TicketService.checkinTicket(code);
 
     _checkinSuccess = res.isSuccess;
     _checkinMessage = res.message;

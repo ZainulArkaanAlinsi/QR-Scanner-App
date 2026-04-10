@@ -62,7 +62,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             return Scaffold(
               appBar: AppBar(
                   backgroundColor: const Color(0xFF1A237E),
-                  leading: BackButton(color: Colors.white)),
+                  leading: const BackButton(color: Colors.white)),
               body: Center(
                 child: ep.error != null
                     ? ErrorCard(message: ep.error!)
@@ -139,7 +139,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        event.description,
+                        event.desc,
                         style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey.shade700,

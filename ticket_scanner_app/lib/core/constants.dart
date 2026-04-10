@@ -4,8 +4,8 @@
 //   Physical device  : http://<YOUR_PC_LAN_IP>:8000/api  e.g. http://192.168.1.5:8000/api
 //   Production       : https://your-domain.com/api
 // ---------------------------------------------------------------------------
-const String kAppName = 'TicketScan';
-const String kBaseUrl = 'http://10.0.2.2:8000/api';
+const String kAppName = 'Ticket Scanner';
+const String kBaseUrl = 'https://ikutan.memoowi.com/api';
 
 // SharedPreferences keys
 const String kTokenKey = 'auth_token';

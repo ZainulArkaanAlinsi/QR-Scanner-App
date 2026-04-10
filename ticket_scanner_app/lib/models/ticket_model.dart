@@ -4,7 +4,7 @@ class TicketModel {
   final String eventId;
   final String userId;
   final bool isCanceled;
-  final DateTime? checkInAt;
+  final DateTime? checkedAt;
   final DateTime? createdAt;
 
   TicketModel({
@@ -13,7 +13,7 @@ class TicketModel {
     required this.eventId,
     required this.userId,
     required this.isCanceled,
-    this.checkInAt,
+    this.checkedAt,
     this.createdAt,
   });
 
@@ -24,8 +24,8 @@ class TicketModel {
       eventId: json['event_id']?.toString() ?? '',
       userId: json['user_id']?.toString() ?? '',
       isCanceled: json['is_canceled'] == true,
-      checkInAt: json['check_in_at'] != null
-          ? DateTime.tryParse(json['check_in_at'])
+      checkedAt: json['checked_at'] != null
+          ? DateTime.tryParse(json['checked_at'] ?? '')
           : null,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'])
@@ -36,9 +36,9 @@ class TicketModel {
   /// Status label for display
   String get statusLabel {
     if (isCanceled) return 'Canceled';
-    if (checkInAt != null) return 'Checked In';
+    if (checkedAt != null) return 'Checked In';
     return 'Active';
   }
 
-  bool get isActive => !isCanceled && checkInAt == null;
+  bool get isActive => !isCanceled && checkedAt == null;
 }

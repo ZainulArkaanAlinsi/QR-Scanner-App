@@ -39,6 +39,38 @@ class EventProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
+  Future<bool> createEvent(Map<String, dynamic> data) async {
+    _setLoading(true);
+    _error = null;
+
+    final res = await EventService.storeEvent(data);
+    if (res.isSuccess) {
+      await fetchEvents(); // Refresh list
+      _setLoading(false);
+      return true;
+    } else {
+      _error = res.message;
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  Future<bool> updateEvent(String eventId, Map<String, dynamic> data) async {
+    _setLoading(true);
+    _error = null;
+
+    final res = await EventService.updateEvent(eventId, data);
+    if (res.isSuccess) {
+      await fetchEvents(); // Refresh list
+      _setLoading(false);
+      return true;
+    } else {
+      _error = res.message;
+      _setLoading(false);
+      return false;
+    }
+  }
+
   void clearSelectedEvent() {
     _selectedEvent = null;
   }

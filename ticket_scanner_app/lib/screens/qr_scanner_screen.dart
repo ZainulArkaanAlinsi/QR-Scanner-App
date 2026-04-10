@@ -138,8 +138,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                           value: tp.checkinTicket!.id.substring(0, 12)),
                       _InfoRow(
                           label: 'Check-in Time',
-                          value: tp.checkinTicket!.checkInAt != null
-                              ? _formatTime(tp.checkinTicket!.checkInAt!)
+                          value: tp.checkinTicket!.checkedAt != null
+                              ? _formatTime(tp.checkinTicket!.checkedAt!)
                               : 'Just now'),
                     ],
                   ),
@@ -244,7 +244,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                     border: Border.all(color: Colors.white, width: 2),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Stack(
+                  child: const Stack(
                     children: [
                       // Corner decorations
                       _Corner(top: true, left: true),

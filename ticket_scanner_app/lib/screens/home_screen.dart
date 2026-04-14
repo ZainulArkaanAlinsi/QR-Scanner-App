@@ -19,19 +19,44 @@ class HomeScreen extends StatelessWidget {
             index: navCtrl.currentIndex.value,
             children: navCtrl.navItems.map((item) => item.screen).toList(),
           )),
-      bottomNavigationBar: Obx(() => BottomNavigationBar(
-            currentIndex: navCtrl.currentIndex.value,
-            onTap: navCtrl.changeIndex,
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: const Color(0xFF1A237E),
-            unselectedItemColor: Colors.grey,
-            showUnselectedLabels: true,
-            items: navCtrl.navItems
-                .map((item) => BottomNavigationBarItem(
+      bottomNavigationBar: Obx(() => Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, -4),
+                ),
+              ],
+            ),
+            child: NavigationBar(
+              selectedIndex: navCtrl.currentIndex.value,
+              onDestinationSelected: navCtrl.changeIndex,
+              animationDuration: const Duration(milliseconds: 500),
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.white,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              destinations: navCtrl.navItems
+                  .map(
+                    (item) => NavigationDestination(
                       icon: Icon(item.icon),
+                      selectedIcon: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6366F1).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(item.icon, size: 24),
+                      ),
                       label: item.title,
-                    ))
-                .toList(),
+                    ),
+                  )
+                  .toList(),
+            ),
           )),
     );
   }

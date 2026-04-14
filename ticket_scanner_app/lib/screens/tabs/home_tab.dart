@@ -25,56 +25,103 @@ class _HomeTabState extends State<HomeTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FF),
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A237E),
-        elevation: 0,
         title: const Text(
           'Upcoming Events',
           style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.3,
+          ),
         ),
+        centerTitle: false,
+        elevation: 0,
+        backgroundColor: const Color(0xFF6366F1),
       ),
       body: Consumer<EventProvider>(
         builder: (_, ep, __) {
           if (ep.isLoading && ep.events.isEmpty) {
             return const Center(
-                child: CircularProgressIndicator(color: Color(0xFF1A237E)));
+              child: CircularProgressIndicator(
+                color: Color(0xFF6366F1),
+                strokeWidth: 3,
+              ),
+            );
           }
           return RefreshIndicator(
-            color: const Color(0xFF1A237E),
+            color: const Color(0xFF6366F1),
             onRefresh: ep.fetchEvents,
             child: CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (ep.error != null) ...[
                           ErrorCard(message: ep.error!),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
                         ],
-                        Text(
-                          '${ep.events.length} events available',
-                          style: TextStyle(
-                              fontSize: 13, color: Colors.grey.shade600),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                const Color(0xFF6366F1).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '✨ ${ep.events.length} events available',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF6366F1),
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
                 if (ep.events.isEmpty && !ep.isLoading)
-                  const SliverFillRemaining(
+                  SliverFillRemaining(
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.event_busy, size: 64, color: Colors.grey),
-                          SizedBox(height: 12),
-                          Text('No events yet',
-                              style: TextStyle(color: Colors.grey)),
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.event_busy,
+                              size: 60,
+                              color: Colors.grey.shade400,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No events yet',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Events will appear here soon',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -82,7 +129,7 @@ class _HomeTabState extends State<HomeTab> {
                 else
                   SliverPadding(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (_, i) => _EventCard(
@@ -110,104 +157,159 @@ class _EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr =
-        DateFormat('EEE, dd MMM yyyy • HH:mm').format(event.date.toLocal());
+    final dateStr = DateFormat('EEE, dd MMM').format(event.date.toLocal());
+    final timeStr = DateFormat('HH:mm').format(event.date.toLocal());
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
+            // Image
             ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(18)),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                bottomLeft: Radius.circular(16),
+              ),
               child: event.images.isNotEmpty
                   ? Image.network(
                       event.images.first,
-                      height: 160,
-                      width: double.infinity,
+                      width: 120,
+                      height: 140,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _PlaceholderImage(),
-                    )
-                  : _PlaceholderImage(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    event.name,
-                    style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1A237E)),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(Icons.calendar_today,
-                          size: 14, color: Colors.grey),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(dateStr,
-                            style: const TextStyle(
-                                fontSize: 13, color: Colors.grey)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      const Icon(Icons.people_outline,
-                          size: 14, color: Colors.grey),
-                      const SizedBox(width: 6),
-                      Text(
-                        event.isFull
-                            ? 'Full'
-                            : '${event.availableSlots} slots left',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: event.isFull
-                              ? Colors.red
-                              : const Color(0xFF2E7D32),
-                          fontWeight: FontWeight.w600,
+                      errorBuilder: (_, __, ___) => SizedBox(
+                        width: 120,
+                        height: 140,
+                        child: Container(
+                          color: const Color(0xFFEEEEEE),
+                          child: const Icon(
+                            Icons.event,
+                            size: 40,
+                            color: Color(0xFF6366F1),
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ],
+                    )
+                  : SizedBox(
+                      width: 120,
+                      height: 140,
+                      child: Container(
+                        color: const Color(0xFFEEEEEE),
+                        child: const Icon(
+                          Icons.event,
+                          size: 40,
+                          color: Color(0xFF6366F1),
+                        ),
+                      ),
+                    ),
+            ),
+            // Content
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Event Name
+                    Text(
+                      event.name,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1F2937),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 10),
+                    // Date & Time
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          size: 13,
+                          color: Color(0xFF6366F1),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          dateStr,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF6B7280),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(
+                          Icons.access_time,
+                          size: 13,
+                          color: Color(0xFF6366F1),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          timeStr,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF6B7280),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    // Slots Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: event.isFull
+                            ? const Color(0xFFEF4444).withValues(alpha: 0.1)
+                            : const Color(0xFF10B981).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        event.isFull
+                            ? 'Event Full'
+                            : '${event.availableSlots} slots left',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: event.isFull
+                              ? const Color(0xFFEF4444)
+                              : const Color(0xFF10B981),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Arrow Icon
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Icon(
+                Icons.chevron_right,
+                color: Colors.grey.shade400,
+                size: 24,
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _PlaceholderImage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 160,
-      width: double.infinity,
-      color: const Color(0xFFE8EAF6),
-      child: const Icon(Icons.event, size: 60, color: Color(0xFF9FA8DA)),
     );
   }
 }

@@ -4,8 +4,10 @@
 //   Physical device  : http://<YOUR_PC_LAN_IP>:8000/api  e.g. http://192.168.1.5:8000/api
 //   Production       : https://your-domain.com/api
 // ---------------------------------------------------------------------------
+import '../env/env.dart';
+
 const String kAppName = 'Ticket Scanner';
-const String kBaseUrl = 'https://ikutan.memoowi.com/api';
+const String kBaseUrl = Env.apiUrl;
 
 // SharedPreferences keys
 const String kTokenKey = 'auth_token';

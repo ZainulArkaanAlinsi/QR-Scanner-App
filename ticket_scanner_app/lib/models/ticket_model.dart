@@ -1,3 +1,5 @@
+import 'event_model.dart';
+
 class TicketModel {
   final String id;
   final String code;
@@ -6,6 +8,7 @@ class TicketModel {
   final bool isCanceled;
   final DateTime? checkedAt;
   final DateTime? createdAt;
+  final EventModel? event;
 
   TicketModel({
     required this.id,
@@ -15,6 +18,7 @@ class TicketModel {
     required this.isCanceled,
     this.checkedAt,
     this.createdAt,
+    this.event,
   });
 
   factory TicketModel.fromJson(Map<String, dynamic> json) {
@@ -30,6 +34,7 @@ class TicketModel {
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'])
           : null,
+      event: json['event'] != null ? EventModel.fromJson(json['event']) : null,
     );
   }
 
@@ -41,4 +46,5 @@ class TicketModel {
   }
 
   bool get isActive => !isCanceled && checkedAt == null;
+  bool get used => checkedAt != null;
 }

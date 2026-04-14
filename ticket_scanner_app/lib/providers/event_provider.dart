@@ -80,6 +80,20 @@ class EventProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  final Set<String> _bookmarkedIds = {};
+  Set<String> get bookmarkedIds => _bookmarkedIds;
+
+  void toggleBookmark(String eventId) {
+    if (_bookmarkedIds.contains(eventId)) {
+      _bookmarkedIds.remove(eventId);
+    } else {
+      _bookmarkedIds.add(eventId);
+    }
+    notifyListeners();
+  }
+
+  bool isBookmarked(String eventId) => _bookmarkedIds.contains(eventId);
+
   void _setLoading(bool val) {
     _isLoading = val;
     notifyListeners();

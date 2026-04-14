@@ -85,6 +85,19 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       const Icon(Icons.arrow_back_ios_new, color: Colors.white),
                   onPressed: () => context.go('/home'),
                 ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.share_outlined, color: Colors.white),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Sharing link copied to clipboard!'),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    },
+                  ),
+                ],
                 flexibleSpace: FlexibleSpaceBar(
                   title: Text(
                     event.name,

@@ -6,8 +6,8 @@ class Const {
   static String get appVersion => "1.0.0";
 
   // API Config (Web/Backend)
-  static String get baseUrl => "http://ticket-scanner.com";
-  static String get apiUrl => "$baseUrl/api";
+  static String get baseUrl => Env.apiUrl.replaceAll('/api', '');
+  static String get apiUrl => Env.apiUrl;
   static String get apiKey => Env.apiKey; // Using Envied
 
   // Storage Keys

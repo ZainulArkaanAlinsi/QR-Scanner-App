@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/event_provider.dart';
-import '../widgets/loading_button.dart';
 
 class EventFormScreen extends StatefulWidget {
   final String? eventId;
@@ -51,6 +50,16 @@ class _EventFormScreenState extends State<EventFormScreen> {
       initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Theme.of(context).primaryColor,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (date != null && mounted) {
       final time = await showTimePicker(
@@ -66,8 +75,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
             time.hour,
             time.minute,
           );
-          _dateCtrl.text =
-              DateFormat('yyyy-MM-dd HH:mm').format(_selectedDate!);
+          _dateCtrl.text = DateFormat('yyyy-MM-dd HH:mm').format(_selectedDate!);
         });
       }
     }
@@ -75,6 +83,12 @@ class _EventFormScreenState extends State<EventFormScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_selectedDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a date')),
+      );
+      return;
+    }
 
     final data = {
       'name': _nameCtrl.text,
@@ -94,8 +108,10 @@ class _EventFormScreenState extends State<EventFormScreen> {
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(
-                'Event ${widget.eventId == null ? 'created' : 'updated'} successfully')),
+          content: Text('Event successfully ${widget.eventId == null ? 'created' : 'updated'}'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
       context.pop();
     }
@@ -106,10 +122,14 @@ class _EventFormScreenState extends State<EventFormScreen> {
     final isLoading = context.watch<EventProvider>().isLoading;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
-        title: Text(widget.eventId == null ? 'Create Event' : 'Edit Event'),
-        backgroundColor: const Color(0xFF1A237E),
-        foregroundColor: Colors.white,
+        title: Text(
+          widget.eventId == null ? 'Create New Event' : 'Edit Event',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        elevation: 0,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -118,54 +138,122 @@ class _EventFormScreenState extends State<EventFormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
+              _buildSectionTitle('Basic Information'),
+              const SizedBox(height: 16),
+              _buildTextField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Event Name', border: OutlineInputBorder()),
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                label: 'Event Name',
+                icon: Icons.event,
+                hint: 'e.g. Summer Music Festival',
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              _buildTextField(
                 controller: _descCtrl,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                    labelText: 'Description', border: OutlineInputBorder()),
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                label: 'Description',
+                icon: Icons.description_outlined,
+                hint: 'Tell people about your event...',
+                maxLines: 4,
               ),
+              const SizedBox(height: 24),
+              _buildSectionTitle('Logistics'),
               const SizedBox(height: 16),
-              TextFormField(
+              _buildTextField(
                 controller: _dateCtrl,
+                label: 'Date & Time',
+                icon: Icons.calendar_today_outlined,
                 readOnly: true,
                 onTap: _pickDate,
-                decoration: const InputDecoration(
-                  labelText: 'Event Date & Time',
-                  suffixIcon: Icon(Icons.calendar_today),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                hint: 'Select when it happens',
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              _buildTextField(
                 controller: _maxReservedCtrl,
+                label: 'Max Participants',
+                icon: Icons.people_outline,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                    labelText: 'Max Reservation', border: OutlineInputBorder()),
-                validator: (v) {
-                  if (v == null || v.isEmpty) return 'Required';
-                  if (int.tryParse(v) == null) return 'Must be a number';
-                  return null;
-                },
+                hint: 'e.g. 100',
               ),
-              const SizedBox(height: 32),
-              LoadingButton(
-                label: widget.eventId == null ? 'Create Event' : 'Save Changes',
-                isLoading: isLoading,
-                onPressed: _submit,
+              const SizedBox(height: 40),
+              
+              SizedBox(
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : _submit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    elevation: 4,
+                    shadowColor: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : Text(
+                          widget.eventId == null ? 'Publish Event' : 'Save Changes',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        color: Colors.grey.shade700,
+        letterSpacing: 0.5,
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    String? hint,
+    int maxLines = 1,
+    bool readOnly = false,
+    VoidCallback? onTap,
+    TextInputType? keyboardType,
+  }) {
+    return TextFormField(
+      controller: controller,
+      maxLines: maxLines,
+      readOnly: readOnly,
+      onTap: onTap,
+      keyboardType: keyboardType,
+      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        prefixIcon: Icon(icon, size: 20),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey.shade200),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey.shade200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+        ),
+      ),
+      validator: (v) => v == null || v.isEmpty ? 'This field is required' : null,
     );
   }
 }

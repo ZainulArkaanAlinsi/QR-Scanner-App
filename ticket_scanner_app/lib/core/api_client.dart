@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants.dart';
 import '../models/api_response.dart';
+import '../env/env.dart';
 
 class ApiClient {
   static Future<String?> _getToken() async {
@@ -14,6 +15,7 @@ class ApiClient {
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-API-Key': Env.apiKey,
       if (token != null) 'Authorization': 'Bearer $token',
     };
   }

@@ -32,11 +32,6 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
   bool _rememberMe = false;
   bool _agreeTerms = false;
 
-  final Color _accentColor = const Color(0xFF7C3AED); // Muted Purple
-  final Color _textPrimary = const Color(0xFF1E293B); // Dark Slate
-  final Color _placeholderColor = const Color(0xFF94A3B8); // Soft Gray
-  final Color _bgColor = const Color(0xFFF8FAFC); // Very Soft Off-White
-
   @override
   void initState() {
     super.initState();
@@ -91,14 +86,27 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: _bgColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // logo placeholder
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: theme.primaryColor.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.qr_code_scanner, color: theme.primaryColor, size: 36),
+              ),
+              const SizedBox(height: 32),
+
               // Unified Card
               Container(
                 width: double.infinity,
@@ -109,9 +117,8 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 25,
+                      blurRadius: 40,
                       offset: const Offset(0, 10),
-                      spreadRadius: -5,
                     ),
                   ],
                 ),
@@ -135,26 +142,22 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                             duration: const Duration(milliseconds: 200),
                             alignment: _tabController.index == 0
                                 ? Alignment.bottomLeft
-                                : const Alignment(-0.35, 1.0), // Approximate for 2 tabs
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                return Container(
-                                  width: 60, // Width of underline
-                                  height: 2,
-                                  margin: const EdgeInsets.only(left: 30), // Padding to align under text
-                                  decoration: BoxDecoration(
-                                    color: _accentColor,
-                                    borderRadius: BorderRadius.circular(2),
-                                  ),
-                                );
-                              }
+                                : const Alignment(-0.35, 1.0),
+                            child: Container(
+                              width: 60,
+                              height: 3,
+                              margin: const EdgeInsets.only(left: 30),
+                              decoration: BoxDecoration(
+                                color: theme.primaryColor,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
                             ),
                           ),
                           // Full width gray underline
                           Container(
                             height: 1,
                             width: double.infinity,
-                            color: Colors.grey.withValues(alpha: 0.1),
+                            color: Colors.grey.withValues(alpha: 0.05),
                           ),
                         ],
                       ),
@@ -184,19 +187,10 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                 ),
               ),
               
-              const SizedBox(height: 24),
-              // Subtle Decor
-              Opacity(
-                opacity: 0.3,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(3, (index) => Container(
-                    width: 4,
-                    height: 4,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(color: _textPrimary, shape: BoxShape.circle),
-                  )),
-                ),
+              const SizedBox(height: 32),
+              Text(
+                '© 2026 Ticket Scanner. Modern Event Management.',
+                style: theme.textTheme.bodySmall,
               ),
             ],
           ),
@@ -207,6 +201,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
 
   Widget _buildTab(String label, int index) {
     bool isActive = _tabController.index == index;
+    final theme = Theme.of(context);
     return Expanded(
       child: InkWell(
         onTap: () => _tabController.animateTo(index),
@@ -220,7 +215,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
             style: GoogleFonts.plusJakartaSans(
               fontSize: 16,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-              color: isActive ? _accentColor : _placeholderColor,
+              color: isActive ? theme.primaryColor : Colors.grey.shade400,
             ),
           ),
         ),
@@ -229,37 +224,28 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildLoginForm() {
+    final theme = Theme.of(context);
     return Form(
       key: _loginFormKey,
       child: Column(
         key: const ValueKey('LoginForm'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Welcome back',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: _textPrimary,
-            ),
-          ),
+          Text('Welcome back', style: theme.textTheme.headlineSmall),
           const SizedBox(height: 8),
           Text(
-            'Enter your credentials to continue',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 14,
-              color: _placeholderColor,
-            ),
+            'Keep your tickets organized and always ready.',
+            style: theme.textTheme.bodySmall,
           ),
           const SizedBox(height: 32),
           _buildTextField(
             controller: _loginEmailCtrl,
             label: 'Email',
-            hint: 'name@example.com',
+            hint: 'Enter your email',
             icon: Icons.alternate_email,
             validator: Validator.email,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           _buildTextField(
             controller: _loginPassCtrl,
             label: 'Password',
@@ -274,29 +260,18 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
             children: [
               Row(
                 children: [
-                  SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: Checkbox(
-                      value: _rememberMe,
-                      activeColor: _accentColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                      onChanged: (v) => setState(() => _rememberMe = v ?? false),
-                    ),
+                  Checkbox(
+                    value: _rememberMe,
+                    activeColor: theme.primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                    onChanged: (v) => setState(() => _rememberMe = v ?? false),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Remember me',
-                    style: GoogleFonts.plusJakartaSans(fontSize: 13, color: _textPrimary),
-                  ),
+                  Text('Remember me', style: theme.textTheme.bodySmall),
                 ],
               ),
               TextButton(
                 onPressed: () {},
-                child: Text(
-                  'Forgot password?',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600),
-                ),
+                child: const Text('Forgot?', style: TextStyle(fontSize: 13)),
               ),
             ],
           ),
@@ -305,24 +280,21 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           const SizedBox(height: 32),
           Row(
             children: [
-              Expanded(child: Divider(color: Colors.grey.withValues(alpha: 0.1))),
+              Expanded(child: Divider(color: Colors.grey.shade100)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'Or continue with',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: _placeholderColor),
-                ),
+                child: Text('OR', style: theme.textTheme.bodySmall),
               ),
-              Expanded(child: Divider(color: Colors.grey.withValues(alpha: 0.1))),
+              Expanded(child: Divider(color: Colors.grey.shade100)),
             ],
           ),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _socialIcon('assets/icons/google.png', Colors.red.withValues(alpha: 0.05)),
+              _socialIcon(Icons.g_mobiledata, Colors.red.withValues(alpha: 0.1)),
               const SizedBox(width: 20),
-              _socialIcon('assets/icons/apple.png', Colors.black.withValues(alpha: 0.05)),
+              _socialIcon(Icons.apple, Colors.black.withValues(alpha: 0.1)),
             ],
           ),
         ],
@@ -331,25 +303,24 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildRegisterForm() {
+    final theme = Theme.of(context);
     return Form(
       key: _registerFormKey,
       child: Column(
         key: const ValueKey('RegisterForm'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text('Join Us', style: theme.textTheme.headlineSmall),
+          const SizedBox(height: 8),
           Text(
-            'Create an account',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: _textPrimary,
-            ),
+            'Create your account to start scanning tickets.',
+            style: theme.textTheme.bodySmall,
           ),
           const SizedBox(height: 32),
           _buildTextField(
             controller: _regNameCtrl,
             label: 'Full Name',
-            hint: 'Your full name',
+            hint: 'Your Name',
             icon: Icons.person_outline,
             validator: Validator.name,
           ),
@@ -365,7 +336,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           _buildTextField(
             controller: _regPassCtrl,
             label: 'Password',
-            hint: 'Create a password',
+            hint: '••••••••',
             icon: Icons.lock_outline,
             isPassword: true,
             validator: Validator.password,
@@ -374,53 +345,27 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           _buildTextField(
             controller: _regConfirmPassCtrl,
             label: 'Confirm Password',
-            hint: 'Check your password',
+            hint: '••••••••',
             icon: Icons.lock_reset,
             isPassword: true,
             validator: (v) => Validator.confirmPassword(v, _regPassCtrl.text),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Row(
             children: [
-              SizedBox(
-                width: 24,
-                height: 24,
-                child: Checkbox(
-                  value: _agreeTerms,
-                  activeColor: _accentColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                  onChanged: (v) => setState(() => _agreeTerms = v ?? false),
-                ),
+              Checkbox(
+                value: _agreeTerms,
+                activeColor: theme.primaryColor,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                onChanged: (v) => setState(() => _agreeTerms = v ?? false),
               ),
-              const SizedBox(width: 8),
               Expanded(
-                child: Text(
-                  'I agree to the Terms & Conditions',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 13, color: _textPrimary),
-                ),
+                child: Text('I agree to the Terms', style: theme.textTheme.bodySmall),
               ),
             ],
           ),
           const SizedBox(height: 24),
           _buildActionButton('Sign up', _handleRegister),
-          const SizedBox(height: 24),
-          Center(
-            child: GestureDetector(
-              onTap: () => _tabController.animateTo(0),
-              child: RichText(
-                text: TextSpan(
-                  style: GoogleFonts.plusJakartaSans(fontSize: 13, color: _placeholderColor),
-                  children: [
-                    const TextSpan(text: 'Already have an account? '),
-                    TextSpan(
-                      text: 'Log in',
-                      style: TextStyle(color: _accentColor, fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -437,48 +382,15 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: _textPrimary,
-          ),
-        ),
+        Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           obscureText: isPassword,
           validator: validator,
-          cursorColor: _accentColor,
-          style: GoogleFonts.plusJakartaSans(fontSize: 15, color: _textPrimary),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.plusJakartaSans(color: _placeholderColor, fontSize: 13),
-            prefixIcon: Icon(icon, color: _placeholderColor, size: 20),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: _accentColor, width: 2),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Colors.redAccent, width: 1),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Colors.redAccent, width: 2),
-            ),
+            prefixIcon: Icon(icon, size: 20),
           ),
         ),
       ],
@@ -490,43 +402,28 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       builder: (_, auth, __) {
         return SizedBox(
           width: double.infinity,
-          height: 48,
+          height: 56,
           child: ElevatedButton(
             onPressed: auth.isLoading ? null : onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _accentColor,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-            ).copyWith(
-              elevation: WidgetStateProperty.resolveWith<double>((states) {
-                if (states.contains(WidgetState.hovered)) return 4;
-                return 0;
-              }),
-            ),
             child: auth.isLoading
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : Text(
-                    label,
-                    style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                : Text(label),
           ),
         );
       }
     );
   }
 
-  Widget _socialIcon(String asset, Color color) {
+  Widget _socialIcon(IconData icon, Color color) {
     return Container(
-      width: 60,
-      height: 60,
-      padding: const EdgeInsets.all(16),
+      width: 64,
+      height: 64,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade100),
       ),
-      child: const Icon(Icons.star_outline, size: 24, color: Colors.grey), // Mock icons for now
+      child: Icon(icon, size: 28, color: Colors.grey.shade700),
     );
   }
 }

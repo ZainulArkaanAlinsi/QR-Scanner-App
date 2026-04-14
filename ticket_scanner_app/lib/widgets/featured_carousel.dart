@@ -17,23 +17,24 @@ class FeaturedCarousel extends StatelessWidget {
     if (events.isEmpty) return const SizedBox.shrink();
 
     return SizedBox(
-      height: 200,
+      height: 220,
       child: PageView.builder(
-        controller: PageController(viewportFraction: 0.9),
+        controller: PageController(viewportFraction: 0.85),
         itemCount: events.length > 5 ? 5 : events.length,
         itemBuilder: (context, index) {
           final event = events[index];
           return GestureDetector(
             onTap: () => onTap(event),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 8),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 15,
-                    offset: const Offset(0, 8),
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
                   ),
                 ],
               ),
@@ -43,12 +44,15 @@ class FeaturedCarousel extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     // Image
-                    event.images.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: event.images.first,
-                            fit: BoxFit.cover,
-                          )
-                        : Container(color: Colors.indigo),
+                    Hero(
+                      tag: 'event-image-${event.id}-featured',
+                      child: event.images.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: event.images.first,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(color: Theme.of(context).primaryColor),
+                    ),
 
                     // Gradient Overlay
                     Container(
@@ -58,24 +62,26 @@ class FeaturedCarousel extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
+                            Colors.black.withValues(alpha: 0.1),
                             Colors.black.withValues(alpha: 0.8),
                           ],
+                          stops: const [0.0, 0.5, 1.0],
                         ),
                       ),
                     ),
 
                     // Text Content
                     Positioned(
-                      bottom: 20,
-                      left: 20,
-                      right: 20,
+                      bottom: 24,
+                      left: 24,
+                      right: 24,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.indigo.withValues(alpha: 0.9),
+                              color: Theme.of(context).primaryColor,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Text(
@@ -84,26 +90,28 @@ class FeaturedCarousel extends StatelessWidget {
                                 color: Colors.white,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                letterSpacing: 1,
+                                letterSpacing: 1.2,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           Text(
                             event.name,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 18,
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
+                              height: 1.2,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          const SizedBox(height: 4),
                           Text(
                             event.desc,
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.8),
-                              fontSize: 12,
+                              color: Colors.white.withValues(alpha: 0.9),
+                              fontSize: 13,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

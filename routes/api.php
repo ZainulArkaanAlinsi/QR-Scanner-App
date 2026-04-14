@@ -51,7 +51,7 @@ Route::middleware(['apikey'])->group(function () {
             Route::post('/event/{eventId}', [EventController::class, 'update']);
             Route::delete('/event/{eventId}', [EventController::class, 'delete']);
             Route::get('/event/{eventId}/ticket', [TicketController::class, 'indexByEvent']);
-            Route::patch('/ticket/{ticketId}/checkin', [TicketController::class, 'checkin']);
+            Route::post('/ticket/checkin', [TicketController::class, 'checkin']);
         });
     });
     

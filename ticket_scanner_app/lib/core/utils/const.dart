@@ -13,4 +13,9 @@ class Const {
   // Storage Keys
   static String get tokenKey => "auth_token";
   static String get userKey => "user_data";
+
+  // UI Constants
+  static double get padding => 20.0;
+  static double get radius => 16.0;
+  static double get cardElevation => 0.0;
 }

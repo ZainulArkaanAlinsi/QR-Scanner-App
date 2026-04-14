@@ -1,134 +1,123 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../core/utils/const.dart';
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final auth = context.watch<AuthProvider>();
     final user = auth.user;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAFA),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+          padding: EdgeInsets.all(Const.padding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
                 'My Profile',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1F2937),
-                    ),
+                style: theme.textTheme.headlineSmall,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               
               // Profile Card
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.grey.shade200),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    // Avatar
-                    Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF6366F1).withValues(alpha: 0.3),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(Icons.person, size: 45, color: Colors.white),
-                    ),
-                    const SizedBox(height: 16),
-                    if (user != null) ...[
-                      Text(
-                        user.name,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1F2937),
-                        ),
-                      ),
-                      Text(
-                        user.email,
-                        style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
-                      ),
-                      const SizedBox(height: 16),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                  child: Column(
+                    children: [
+                      // Avatar
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        width: 100,
+                        height: 100,
                         decoration: BoxDecoration(
-                          color: user.isAdmin ? Colors.red.shade50 : Colors.green.shade50,
-                          borderRadius: BorderRadius.circular(20),
+                          gradient: LinearGradient(
+                            colors: [theme.primaryColor, theme.primaryColor.withValues(alpha: 0.7)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.primaryColor.withValues(alpha: 0.2),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          user.role.toUpperCase(),
-                          style: TextStyle(
-                            color: user.isAdmin ? Colors.red.shade700 : Colors.green.shade700,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
+                        child: const Icon(Icons.person_rounded, size: 50, color: Colors.white),
+                      ),
+                      const SizedBox(height: 20),
+                      if (user != null) ...[
+                        Text(
+                          user.name,
+                          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          user.email,
+                          style: theme.textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: user.isAdmin ? Colors.red.withValues(alpha: 0.1) : Colors.green.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            user.role.toUpperCase(),
+                            style: TextStyle(
+                              color: user.isAdmin ? Colors.red : Colors.green,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
               
               // Settings list
-              _buildSettingItem(context, Icons.person_outline, 'Edit Profile', () {}),
-              _buildSettingItem(context, Icons.security_outlined, 'Security', () {}),
-              _buildSettingItem(context, Icons.help_outline, 'Help & Support', () {}),
-              const SizedBox(height: 32),
+              _buildSettingItem(context, Icons.person_outline, 'Personal Information', () {}),
+              _buildSettingItem(context, Icons.notifications_none_outlined, 'Notifications', () {}),
+              _buildSettingItem(context, Icons.security_outlined, 'Security & Password', () {}),
+              _buildSettingItem(context, Icons.help_outline, 'Help Center', () {}),
+              const SizedBox(height: 40),
               
               // Logout Button
-              ElevatedButton(
-                onPressed: () async {
-                  await auth.logout();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade50,
-                  foregroundColor: Colors.red,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.logout, size: 20),
-                    SizedBox(width: 8),
-                    Text('Logout Account', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ],
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: TextButton(
+                  onPressed: () async {
+                    await auth.logout();
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    backgroundColor: Colors.red.withValues(alpha: 0.05),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.logout, size: 20),
+                      const SizedBox(width: 12),
+                      Text('Log Out', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    ],
+                  ),
                 ),
               ),
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -140,7 +129,7 @@ class ProfileTab extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          contentPadding: EdgeInsets.zero,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
           leading: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
@@ -153,7 +142,7 @@ class ProfileTab extends StatelessWidget {
           trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
           onTap: onTap,
         ),
-        Divider(color: Colors.grey.shade100, thickness: 1),
+        Divider(color: Colors.grey.shade50, height: 1),
       ],
     );
   }

@@ -20,60 +20,46 @@ class TicketTile extends StatelessWidget {
         ? DateFormat('dd MMM yyyy').format(ticket.createdAt!)
         : 'Recently';
 
-    return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor ?? Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return Card(
       child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: _getStatusColor().withValues(alpha: 0.1),
+            color: _getStatusColor(context).withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(
             ticket.isCanceled
                 ? Icons.cancel_outlined
                 : (ticket.used ? Icons.check_circle_outline : Icons.confirmation_number_outlined),
-            color: _getStatusColor(),
+            color: _getStatusColor(context),
             size: 20,
           ),
         ),
         title: Text(
           ticket.event?.name ?? 'Event Ticket',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF1F2937),
-              ),
+          style: Theme.of(context).textTheme.titleSmall,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(
-          'Ordered $dateStr • #${ticket.id.substring(0, 8).toUpperCase()}',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey.shade500,
-              ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            'Ordered $dateStr • #${ticket.id.substring(0, 8).toUpperCase()}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ),
-        trailing: const Icon(Icons.chevron_right, size: 18, color: Colors.grey),
+        trailing: Icon(Icons.chevron_right, size: 20, color: Colors.grey.shade400),
       ),
     );
   }
 
-  Color _getStatusColor() {
-    if (ticket.isCanceled) return Colors.red;
-    if (ticket.used) return Colors.green;
-    return Colors.indigo;
+  Color _getStatusColor(BuildContext context) {
+    if (ticket.isCanceled) return Theme.of(context).colorScheme.error;
+    if (ticket.used) return Colors.amber.shade700;
+    return Theme.of(context).primaryColor;
   }
 }

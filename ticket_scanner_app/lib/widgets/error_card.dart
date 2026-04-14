@@ -8,51 +8,42 @@ class ErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFEE2E2),
-        border: Border.all(color: const Color(0xFFFCA5A5), width: 1),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFEF4444).withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: theme.colorScheme.errorContainer.withValues(alpha: 0.1),
+        border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.2), width: 1),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFFDC2626),
-              borderRadius: BorderRadius.circular(8),
+              color: theme.colorScheme.error.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.info, color: Colors.white, size: 20),
+            child: Icon(Icons.info_outline, color: theme.colorScheme.error, size: 20),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Terjadi Kesalahan',
-                  style: TextStyle(
-                    color: Color(0xFFDC2626),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                Text(
+                  'Error Occurred',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: theme.colorScheme.error,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
                 Text(
                   message,
-                  style: TextStyle(
-                    color: const Color(0xFFDC2626).withValues(alpha: 0.8),
-                    fontSize: 13,
-                    height: 1.4,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.error.withValues(alpha: 0.8),
                   ),
                 ),
               ],
@@ -60,13 +51,9 @@ class ErrorCard extends StatelessWidget {
           ),
           if (onDismiss != null) ...[
             const SizedBox(width: 12),
-            GestureDetector(
-              onTap: onDismiss,
-              child: Icon(
-                Icons.close,
-                size: 20,
-                color: const Color(0xFFDC2626).withValues(alpha: 0.6),
-              ),
+            IconButton(
+              onPressed: onDismiss,
+              icon: Icon(Icons.close, size: 18, color: theme.colorScheme.error.withValues(alpha: 0.5)),
             ),
           ],
         ],

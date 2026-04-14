@@ -5,6 +5,7 @@ import '../../providers/event_provider.dart';
 import '../../widgets/event_tile.dart';
 import '../../widgets/error_card.dart';
 import '../../widgets/featured_carousel.dart';
+import '../../core/utils/const.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -47,7 +48,7 @@ class _HomeTabState extends State<HomeTab> {
 
             return RefreshIndicator(
               onRefresh: ep.fetchEvents,
-              color: Colors.indigo,
+              color: Theme.of(context).primaryColor,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
@@ -55,7 +56,7 @@ class _HomeTabState extends State<HomeTab> {
                   children: [
                     // Top Bar
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                      padding: EdgeInsets.fromLTRB(Const.padding, 16, Const.padding, 24),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -64,14 +65,12 @@ class _HomeTabState extends State<HomeTab> {
                             children: [
                               Text(
                                 'Explore Events',
-                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF1F2937),
-                                    ),
+                                style: Theme.of(context).textTheme.headlineSmall,
                               ),
+                              const SizedBox(height: 4),
                               Text(
-                                'Don\'t miss out on the fun',
-                                style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                                "Find the best experiences around you",
+                                style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
                           ),
@@ -86,11 +85,11 @@ class _HomeTabState extends State<HomeTab> {
                         events: ep.events,
                         onTap: (event) => context.push('/event/${event.id}'),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
                     ],
 
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: EdgeInsets.symmetric(horizontal: Const.padding),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -98,25 +97,18 @@ class _HomeTabState extends State<HomeTab> {
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(Const.radius),
                               border: Border.all(color: Colors.grey.shade200),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
                             ),
                             child: TextField(
                               controller: _searchCtrl,
                               decoration: InputDecoration(
-                                hintText: 'Search exciting events...',
-                                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                                hintText: 'Search events...',
+                                prefixIcon: const Icon(Icons.search),
                                 border: InputBorder.none,
                                 enabledBorder: InputBorder.none,
                                 focusedBorder: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                                contentPadding: const EdgeInsets.symmetric(vertical: 16),
                                 suffixIcon: _query.isNotEmpty
                                     ? IconButton(
                                         icon: const Icon(Icons.clear, size: 20),
@@ -126,40 +118,49 @@ class _HomeTabState extends State<HomeTab> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 32),
 
                           if (ep.error != null) ...[
                             ErrorCard(message: ep.error!, onDismiss: ep.clearError),
                             const SizedBox(height: 16),
                           ],
 
-                          Text(
-                            _query.isEmpty ? 'Latest Events' : 'Search Results',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1F2937),
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _query.isEmpty ? 'Trending Now' : 'Search Results',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              if (_query.isEmpty)
+                                TextButton(
+                                  onPressed: () {},
+                                  child: const Text('See All'),
+                                ),
+                            ],
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
 
                           if (ep.isLoading && ep.events.isEmpty)
-                            const Center(
+                            Center(
                               child: Padding(
-                                padding: EdgeInsets.all(40),
-                                child: CircularProgressIndicator(color: Colors.indigo),
+                                padding: const EdgeInsets.all(40),
+                                child: CircularProgressIndicator(color: Theme.of(context).primaryColor),
                               ),
                             )
                           else if (filteredEvents.isEmpty)
                             Center(
                               child: Column(
                                 children: [
-                                  const SizedBox(height: 40),
-                                  Icon(Icons.search_off, size: 64, color: Colors.grey.shade300),
+                                  const SizedBox(height: 60),
+                                  Icon(Icons.search_off, size: 80, color: Colors.grey.shade200),
                                   const SizedBox(height: 16),
                                   Text(
-                                    _query.isEmpty ? 'No events available' : 'No events match "$_query"',
-                                    style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.bold),
+                                    _query.isEmpty ? 'No events available' : 'No matches for "$_query"',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: Colors.grey.shade500,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -169,7 +170,7 @@ class _HomeTabState extends State<HomeTab> {
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: filteredEvents.length,
-                              separatorBuilder: (context, index) => const SizedBox(height: 12),
+                              separatorBuilder: (context, index) => const SizedBox(height: 16),
                               itemBuilder: (context, index) {
                                 final event = filteredEvents[index];
                                 return EventTile(
@@ -178,7 +179,7 @@ class _HomeTabState extends State<HomeTab> {
                                 );
                               },
                             ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 32),
                         ],
                       ),
                     ),
@@ -194,29 +195,34 @@ class _HomeTabState extends State<HomeTab> {
 
   Widget _buildWishlistBadge(int count) {
     return Stack(
-      alignment: Alignment.center,
+      clipBehavior: Clip.none,
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.indigo.withValues(alpha: 0.1),
+            color: Colors.white,
             shape: BoxShape.circle,
+            border: Border.all(color: Colors.grey.shade100),
           ),
-          child: const Icon(Icons.favorite_border, color: Colors.indigo),
+          child: Icon(Icons.favorite_border, color: Theme.of(context).primaryColor, size: 22),
         ),
         if (count > 0)
           Positioned(
-            right: 0,
-            top: 0,
+            right: -2,
+            top: -2,
             child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: const BoxDecoration(
-                color: Colors.red,
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.error,
                 shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
               ),
-              child: Text(
-                count.toString(),
-                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+              constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
+              child: Center(
+                child: Text(
+                  count.toString(),
+                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ),

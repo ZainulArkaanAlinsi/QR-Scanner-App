@@ -2,16 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Modern Color Palette
-  static const Color primary = Color(0xFF6366F1); // Modern Indigo
+  // Premium Color Palette
+  static const Color primary = Color(0xFF6366F1); // Indigo
   static const Color primaryLight = Color(0xFF818CF8);
   static const Color primaryDark = Color(0xFF4F46E5);
-  static const Color secondary = Color(0xFF10B981); // Modern Green
-  static const Color background = Color(0xFFF8FAFC); // Very Soft Off-White
+  static const Color secondary = Color(0xFF10B981); // Emerald
+  static const Color accent = Color(0xFFF59E0B); // Amber
+  static const Color background = Color(0xFFF8FAFC);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color error = Color(0xFFEF4444);
-  static const Color textPrimary = Color(0xFF1E293B); // Dark Slate
-  static const Color textSecondary = Color(0xFF64748B); // Muted Slate
+  static const Color success = Color(0xFF22C55E);
+  static const Color textPrimary = Color(0xFF1E293B);
+  static const Color textSecondary = Color(0xFF64748B);
+  static const Color textTertiary = Color(0xFF94A3B8);
+  
+  // Gradients
+  static const LinearGradient primaryGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [primary, primaryLight],
+  );
+  
+  static const LinearGradient accentGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFF59E0B), Color(0xFFFBBF24)],
+  );
 
   static ThemeData get lightTheme {
     final baseTheme = ThemeData(
@@ -23,22 +39,42 @@ class AppTheme {
 
     return baseTheme.copyWith(
       textTheme: GoogleFonts.plusJakartaSansTextTheme(baseTheme.textTheme).copyWith(
+        headlineLarge: GoogleFonts.plusJakartaSans(
+          fontWeight: FontWeight.bold,
+          color: textPrimary,
+          fontSize: 28,
+        ),
+        headlineMedium: GoogleFonts.plusJakartaSans(
+          fontWeight: FontWeight.bold,
+          color: textPrimary,
+          fontSize: 24,
+        ),
         headlineSmall: GoogleFonts.plusJakartaSans(
           fontWeight: FontWeight.bold,
           color: textPrimary,
+          fontSize: 20,
+        ),
+        titleLarge: GoogleFonts.plusJakartaSans(
+          fontWeight: FontWeight.w600,
+          color: textPrimary,
+          fontSize: 18,
         ),
         titleMedium: GoogleFonts.plusJakartaSans(
           fontWeight: FontWeight.w600,
           color: textPrimary,
+          fontSize: 16,
         ),
         bodyLarge: GoogleFonts.plusJakartaSans(
           color: textPrimary,
+          fontSize: 16,
         ),
         bodyMedium: GoogleFonts.plusJakartaSans(
-          color: textPrimary,
+          color: textSecondary,
+          fontSize: 14,
         ),
         bodySmall: GoogleFonts.plusJakartaSans(
-          color: textSecondary,
+          color: textTertiary,
+          fontSize: 12,
         ),
       ),
 
@@ -110,8 +146,8 @@ class AppTheme {
       cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Colors.grey.shade200, width: 1),
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: Colors.grey.shade100, width: 1),
         ),
         color: surface,
         margin: EdgeInsets.zero,
@@ -128,6 +164,14 @@ class AppTheme {
           side: BorderSide(color: Colors.grey.shade200),
         ),
         labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+      ),
+      
+      // Floating Action Button Theme
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        shape: CircleBorder(),
       ),
     );
   }

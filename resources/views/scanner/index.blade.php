@@ -142,7 +142,7 @@
 </style>
 
 <!-- html5-qrcode library -->
-<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8" type="text/javascript"></script>
 <script>
     let html5QrScanner;
 

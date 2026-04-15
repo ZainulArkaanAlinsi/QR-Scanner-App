@@ -1,651 +1,282 @@
-<<<<<<< HEAD
-# 🎫 QR Code Ticket Scanning API
+# Ticket Scanner - QR Code Event Management System
 
-API untuk validasi QR code tiket event dengan sistem reservasi dan check-in. Proyek ini merupakan bagian dari SKL #1 - Part 1 (Backend API Only).
+Sistem manajemen tiket event berbasis QR code dengan API backend (Laravel) dan mobile app (Flutter).
 
-## 📋 Deskripsi Proyek
+## Arsitektur Sistem
 
-API ini menyediakan sistem manajemen tiket event yang lengkap dengan fitur:
+```
++-------------------------------------------------------------+
+|                    Ticket Scanner System                    |
++-------------------------------------------------------------+
+|                                                              |
+|  +---------------------+        +-------------------------+  |
+|  |   Mobile App       |        |     Laravel API         |  |
+|  |   (Flutter)        | -----> |     (Backend)          |  |
+|  |                     |  HTTP  |                       |  |
+|  |  - User Login       |        |  - Auth (Sanctum)     |  |
+|  |  - Browse Events   |        |  - Event CRUD          |  |
+|  |  - Reserve Tickets |        |  - Ticket Management   |  |
+|  |  - QR Scanner      |        |  - Check-in Validation |  |
+|  |  - View My Tickets |        |  - Role-based Access   |  |
+|  +---------------------+        +-------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
 
-- Validasi QR code tiket
-- Reservasi tiket untuk event
-- Autentikasi user dengan role-based access (Admin & Attendee)
-- Manajemen event (CRUD)
-- Check-in tiket menggunakan QR code
-- Pembatalan tiket
+## Mobile App (Flutter)
 
-## 🛠️ Tech Stack
+### Tech Stack
+
+- **Framework**: Flutter 3.x
+- **State Management**: Provider
+- **HTTP Client**: Dio
+- **QR Scanning**: mobile_scanner
+- **QR Generation**: qr_flutter
+
+### Fitur
+
+- Login/Register dengan role-based
+- Browse & search events
+- Reserve tickets untuk events
+- Scan QR code untuk check-in
+- View & manage tickets
+- Cancel tickets
+- Modern UI dengan gradient & animations
+
+### Struktur Project
+
+```
+ticket_scanner_app/
+├── lib/
+│   ├── core/
+│   │   ├── api_client.dart       # HTTP client configuration
+│   │   ├── themes/app_theme.dart # UI theme & colors
+│   │   └── utils/                # Helpers, validators
+│   ├── models/                   # Data models (User, Event, Ticket)
+│   ├── providers/                # State management (Auth, Event, Ticket)
+│   ├── services/                 # API services
+│   ├── screens/                  # UI screens
+│   │   ├── auth_screen.dart      # Login/Register
+│   │   ├── home_screen.dart      # Main navigation
+│   │   ├── tabs/                 # Bottom tab screens
+│   │   ├── qr_scanner_screen.dart
+│   │   └── event_detail_screen.dart
+│   └── widgets/                  # Reusable UI components
+└── pubspec.yaml
+```
+
+### Cara Menjalankan
+
+```bash
+cd ticket_scanner_app
+flutter pub get
+flutter run
+```
+
+### Konfigurasi
+
+Edit file `.env` untuk set API URL:
+
+```dart
+// lib/env/env.dart
+baseUrl: 'http://10.0.2.2:8000/api' // Android emulator
+// atau 'http://localhost:8000/api' // iOS simulator
+API_KEY: 'K8vskiIaHsvc8NOvBpmAInxvq8YS6kuP'
+```
+
+---
+
+## Backend API (Laravel)
+
+### Tech Stack
 
 - **Framework**: Laravel 11
 - **Database**: MySQL
 - **Authentication**: Laravel Sanctum (Token-based)
 - **PHP Version**: 8.2+
 
-## 📁 Struktur Project
+### Struktur Project
 
-```text
+```
 Api_Scaning_ticket/
 ├── app/
 │   ├── Http/
-│   │   ├── Controllers/
-│   │   │   └── Api/
-│   │   │       ├── AuthController.php      # Authentication endpoints
-│   │   │       ├── EventController.php     # Event management
-│   │   │       └── TicketController.php    # Ticket & QR validation
+│   │   ├── Controllers/Api/
+│   │   │   ├── AuthController.php   # Register, Login, Logout
+│   │   │   ├── EventController.php  # Event CRUD
+│   │   │   └── TicketController.php # Ticket & Check-in
 │   │   └── Middleware/
-│   │       └── RoleMiddleware.php          # Role-based access control
-│   ├── Models/
-│   │   ├── User.php
-│   │   ├── Event.php
-│   │   └── Ticket.php
-│   └── ApiResponse.php                     # Standardized API responses
-├── database/
-│   └── migrations/
-├── routes/
-│   └── api.php                             # API routes definition
-└── README.md
+│   │       ├── ApiKeyMiddleware.php # API Key validation
+│   │       └── RoleMiddleware.php    # Role-based access
+│   └── Models/
+│       ├── User.php
+│       ├── Event.php
+│       └── Ticket.php
+├── database/migrations/
+├── routes/api.php
+└── .env
 ```
 
-## 🚀 Cara Menjalankan Project
+### Cara Menjalankan Backend
 
-### Prerequisites
+```bash
+# Install dependencies
+composer install
 
-- PHP >= 8.2
-- Composer
-- MySQL
-- Git
+# Setup environment
+copy .env.example .env
+php artisan key:generate
 
-### Langkah Instalasi
+# Setup database di .env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=api_scanning_ticket
+DB_USERNAME=root
+DB_PASSWORD=
 
-1. **Clone repository**
+# Run migration & seeder
+php artisan migrate
+php artisan db:seed
 
-    ```bash
-    git clone <repository-url>
-    cd Api_Scaning_ticket
-    ```
+# Link storage untuk upload gambar
+php artisan storage:link
 
-2. **Install dependencies**
+# Run server
+php artisan serve
+```
 
-    ```bash
-    composer install
-    ```
+Server berjalan di: `http://localhost:8000`
 
-3. **Setup environment**
+---
 
-    ```bash
-    copy .env.example .env
-    ```
-
-4. **Konfigurasi database di `.env`**
-
-    ```env
-    DB_CONNECTION=mysql
-    DB_HOST=127.0.0.1
-    DB_PORT=3306
-    DB_DATABASE=api_scanning_ticket
-    DB_USERNAME=root
-    DB_PASSWORD=
-    ```
-
-5. **Generate application key**
-
-    ```bash
-    php artisan key:generate
-    ```
-
-6. **Jalankan migration**
-
-    ```bash
-    php artisan migrate
-    ```
-
-7. **Create storage link (untuk upload gambar event)**
-
-    ```bash
-    php artisan storage:link
-    ```
-
-8. **Jalankan server**
-
-    ```bash
-    php artisan serve
-    ```
-
-    Server akan berjalan di: `http://localhost:8000`
-
-## 📡 API Endpoints
+## API Endpoints
 
 Base URL: `http://localhost:8000/api`
 
-### 🔓 Public Endpoints (No Authentication)
+### Public Endpoints (No Auth)
 
-#### 1. Register User
+| Method | Endpoint   | Description         |
+|--------|------------|---------------------|
+| POST   | `/register` | Register user baru |
+| POST   | `/login`    | Login user          |
 
-```http
-POST /register
-```
+### Protected Endpoints
 
-**Request Body:**
+| Method | Endpoint               | Role      | Description              |
+|--------|------------------------|-----------|--------------------------|
+| GET    | `/user`                | All       | Get user profile         |
+| POST   | `/logout`              | All       | Logout user              |
+| GET    | `/event`               | All       | Get all events           |
+| GET    | `/event/{id}`          | All       | Get event detail         |
+| POST   | `/event`               | Admin     | Create event             |
+| PUT    | `/event/{id}`          | Admin     | Update event             |
+| DELETE | `/event/{id}`          | Admin     | Delete event             |
+| POST   | `/event/{id}/reserve` | Attendee  | Reserve ticket           |
+| GET    | `/my-tickets`          | Attendee  | Get my tickets           |
+| PATCH  | `/ticket/{id}/cancel` | Attendee  | Cancel ticket            |
+| GET    | `/event/{id}/ticket`  | Admin     | Get event tickets        |
+| PATCH  | `/ticket/{id}/checkin`| Admin     | Check-in ticket          |
 
-```json
-{
-    "name": "John Doe",
-    "email": "john@example.com",
-    "password": "password123",
-    "password_confirmation": "password123",
-    "role": "attendee" // optional: "admin" or "attendee" (default: attendee)
-}
-```
-
-**Response (201):**
-
-```json
-{
-    "status": "Success",
-    "message": "User registered successfully",
-    "data": {
-        "token": "1|abcdef123456...",
-        "user": {
-            "id": "01JQWE...",
-            "name": "John Doe",
-            "email": "john@example.com",
-            "role": "attendee"
-        }
-    }
-}
-```
-
-#### 2. Login
-
-```http
-POST /login
-```
-
-**Request Body:**
-
-```json
-{
-    "email": "john@example.com",
-    "password": "password123"
-}
-```
-
-**Response (200):**
-
-```json
-{
-    "status": "Success",
-    "message": "User logged in successfully",
-    "data": {
-        "token": "2|xyz789...",
-        "user": {
-            "id": "01JQWE...",
-            "name": "John Doe",
-            "email": "john@example.com",
-            "role": "attendee"
-        }
-    }
-}
-```
-
----
-
-### 🔒 Protected Endpoints (Require Authentication)
-
-**Header yang diperlukan:**
+### Request Headers
 
 ```text
-Authorization: Bearer {your_token}
+Content-Type: application/json
+X-API-KEY: K8vskiIaHsvc8NOvBpmAInxvq8YS6kuP
+Authorization: Bearer {token}
 ```
 
-#### 3. Get User Profile
-
-```http
-GET /user
-```
-
-**Response (200):**
-
-```json
-{
-    "id": "01JQWE...",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "role": "attendee"
-}
-```
-
-#### 4. Logout
-
-```http
-POST /logout
-```
-
-**Response (200):**
-
-```json
-{
-    "status": "Success",
-    "message": "Logout success",
-    "data": null
-}
-```
-
-#### 5. Get All Events
-
-```http
-GET /event
-```
-
-**Response (200):**
-
-```json
-{
-    "status": "Success",
-    "message": "Events retrieved successfully",
-    "data": [
-        {
-            "id": "01JQWE...",
-            "name": "Tech Conference 2026",
-            "description": "Annual technology conference",
-            "images": ["/storage/events/abc123.jpg"],
-            "date": "2026-03-15T09:00:00.000000Z",
-            "max_reservation": 100,
-            "tickets_count": 45
-        }
-    ]
-}
-```
-
-#### 6. Get Event Detail
-
-```http
-GET /event/{eventId}
-```
-
-**Response (200):**
-
-```json
-{
-    "status": "Success",
-    "message": "Event retrieved successfully",
-    "data": {
-        "id": "01JQWE...",
-        "name": "Tech Conference 2026",
-        "description": "Annual technology conference",
-        "images": ["/storage/events/abc123.jpg"],
-        "date": "2026-03-15T09:00:00.000000Z",
-        "max_reservation": 100,
-        "tickets_count": 45
-    }
-}
-```
-
----
-
-### 👥 Attendee Only Endpoints
-
-#### 7. Reserve Ticket
-
-```http
-POST /event/{eventId}/reserve
-```
-
-**Response (201):**
-
-```json
-{
-    "status": "Success",
-    "message": "Ticket created successfully",
-    "data": {
-        "id": "01JQWE...",
-        "user_id": "01JQWE...",
-        "event_id": "01JQWE...",
-        "code": "ikutan-65d8f9a1b2c3d-eyJ1biI6IjAxSlFXRS4uLiIsInVlIjoiam9obkBleGFtcGxlLmNvbSIsImVuIjoiVGVjaCBDb25mZXJlbmNlIDIwMjYiLCJlZCI6IjIwMjYtMDMtMTVUMDk6MDA6MDAuMDAwMDAwWiJ9",
-        "is_canceled": false,
-        "is_checked_at": null,
-        "created_at": "2026-02-17T10:00:00.000000Z"
-    }
-}
-```
-
-**Error Responses:**
-
-- `400` - Event already ended
-- `400` - You already have a ticket for this event
-- `400` - Event is full
-- `404` - Event not found
-
-#### 8. Get My Tickets
-
-```http
-GET /my-tickets
-```
-
-**Response (200):**
-
-```json
-{
-    "status": "Success",
-    "message": "Tickets retrieved successfully",
-    "data": [
-        {
-            "id": "01JQWE...",
-            "user_id": "01JQWE...",
-            "event_id": "01JQWE...",
-            "code": "ikutan-65d8f9a1b2c3d-...",
-            "is_canceled": false,
-            "is_checked_at": null
-        }
-    ]
-}
-```
-
-#### 9. Cancel Ticket
-
-```http
-PATCH /ticket/{ticketId}/cancel
-```
-
-**Response (200):**
-
-```json
-{
-    "status": "Success",
-    "message": "Ticket canceled successfully",
-    "data": {
-        "id": "01JQWE...",
-        "is_canceled": true
-    }
-}
-```
-
-**Error Responses:**
-
-- `400` - Ticket is already canceled
-- `400` - Ticket already checked in
-- `404` - Ticket not found
-
----
-
-### 👨‍💼 Admin Only Endpoints
-
-#### 10. Create Event
-
-```http
-POST /event
-Content-Type: multipart/form-data
-```
-
-**Request Body (Form Data):**
-
-```text
-name: Tech Conference 2026
-description: Annual technology conference
-images[]: [file1.jpg]
-images[]: [file2.jpg]
-date: 2026-03-15 09:00:00
-max_reservation: 100
-```
-
-**Response (201):**
-
-```json
-{
-    "status": "Success",
-    "message": "Event created successfully",
-    "data": {
-        "id": "01JQWE...",
-        "name": "Tech Conference 2026",
-        "description": "Annual technology conference",
-        "images": ["/storage/events/abc123.jpg"],
-        "date": "2026-03-15T09:00:00.000000Z",
-        "max_reservation": 100
-    }
-}
-```
-
-#### 11. Update Event
-
-```http
-POST /event/{eventId}
-Content-Type: multipart/form-data
-```
-
-**Request Body (Form Data - all optional):**
-
-```text
-name: Updated Event Name
-description: Updated description
-images[]: [new_file.jpg]
-date: 2026-04-20 10:00:00
-max_reservation: 150
-```
-
-**Response (200):**
+### Response Format
 
 ```json
 {
   "status": "Success",
-  "message": "Event updated successfully",
+  "message": "Description",
   "data": { ... }
 }
 ```
 
-#### 12. Delete Event
-
-```http
-DELETE /event/{eventId}
-```
-
-**Response (200):**
-
-```json
-{
-    "status": "Success",
-    "message": "Event deleted successfully",
-    "data": null
-}
-```
-
-#### 13. Get Event Tickets (Admin View)
-
-```http
-GET /event/{eventId}/ticket
-```
-
-**Response (200):**
-
-```json
-{
-    "status": "Success",
-    "message": "Tickets retrieved successfully",
-    "data": [
-        {
-            "id": "01JQWE...",
-            "user_id": "01JQWE...",
-            "event_id": "01JQWE...",
-            "code": "ikutan-65d8f9a1b2c3d-...",
-            "is_canceled": false,
-            "is_checked_at": null
-        }
-    ]
-}
-```
-
-#### 14. Check-in Ticket (QR Code Validation) ✅
-
-```http
-PATCH /ticket/{ticketId}/checkin
-```
-
-**Request Body:**
-
-```json
-{
-    "code": "ikutan-65d8f9a1b2c3d-eyJ1biI6IjAxSlFXRS4uLiIsInVlIjoiam9obkBleGFtcGxlLmNvbSIsImVuIjoiVGVjaCBDb25mZXJlbmNlIDIwMjYiLCJlZCI6IjIwMjYtMDMtMTVUMDk6MDA6MDAuMDAwMDAwWiJ9"
-}
-```
-
-**Response (200) - Valid:**
-
-```json
-{
-    "status": "Success",
-    "message": "Ticket checked in successfully",
-    "data": {
-        "id": "01JQWE...",
-        "code": "ikutan-65d8f9a1b2c3d-...",
-        "is_checked_at": "2026-02-17T10:30:00.000000Z"
-    }
-}
-```
-
-**Error Responses:**
-
-- `404` - Ticket not found / Invalid QR Code
-- `400` - Ticket is canceled
-- `400` - Ticket already checked in / Already Used
-
 ---
 
-## 🔑 QR Code Format
+## QR Code Format
 
-Setiap tiket memiliki QR code dengan format:
+Tiket menggunakan QR code dengan format:
 
-```json
+```
 ikutan-{unique_id}-{base64_encoded_payload}
 ```
 
-**Payload yang di-encode:**
+Payload ter-encode:
 
 ```json
 {
-    "un": "user_id",
-    "ue": "user_email",
-    "en": "event_name",
-    "ed": "event_date"
+  "un": "user_id",
+  "ue": "user_email",
+  "en": "event_name",
+  "ed": "event_date"
 }
 ```
-
-## 📊 HTTP Status Codes
-
-| Code | Meaning                                              |
-| ---- | ---------------------------------------------------- |
-| 200  | Success                                              |
-| 201  | Created                                              |
-| 400  | Bad Request (validation error, business logic error) |
-| 401  | Unauthorized (wrong password)                        |
-| 403  | Forbidden (insufficient role)                        |
-| 404  | Not Found                                            |
-| 500  | Internal Server Error                                |
-
-## 🔐 Role-Based Access Control
-
-| Role         | Permissions                                                                                      |
-| ------------ | ------------------------------------------------------------------------------------------------ |
-| **attendee** | Reserve tickets, view own tickets, cancel tickets                                                |
-| **admin**    | All attendee permissions + Create/Update/Delete events, Check-in tickets, View all event tickets |
-
-## Testing dengan Postman
-
-1. **Register** sebagai admin dan attendee
-2. **Login** untuk mendapatkan token
-3. **Set Authorization Header**: `Bearer {token}`
-4. **Create Event** (sebagai admin)
-5. **Reserve Ticket** (sebagai attendee)
-6. **Check-in** menggunakan QR code (sebagai admin)
-
-## 📝 Database Schema
-
-### Users Table
-
-- id (ULID)
-- name
-- email
-- password
-- role (admin/attendee)
-
-### Events Table
-
-- id (ULID)
-- name
-- description
-- images (JSON array)
-- date (datetime)
-- max_reservation (integer)
-
-### Tickets Table
-
-- id (ULID)
-- user_id (FK)
-- event_id (FK)
-- code (unique QR code)
-- is_canceled (boolean)
-- is_checked_at (datetime, nullable)
-
-## 🎯 Fitur Utama
-
-### ✅ Validasi QR Code
-
-- QR code unik untuk setiap tiket
-- Validasi status: valid / invalid / already used
-- Encoding informasi user dan event dalam QR code
-
-### Sistem Reservasi
-
-- Pembatasan jumlah tiket per event
-- Pencegahan double booking
-- Validasi event yang sudah berakhir
-
-### 🔒 Security
-
-- Token-based authentication (Laravel Sanctum)
-- Role-based middleware
-- Password hashing
-- Input validation
-
-### 📱 API Response Format
-
-Semua response menggunakan format standar:
-
-```json
-{
-  "status": "Success" | "Error",
-  "message": "Description",
-  "data": { ... } | null
-}
-```
-
-## Catatan Penting
-
-- ✅ Project ini **hanya API backend** (Part 1)
-- ✅ Belum ada implementasi mobile/frontend
-- ✅ Menggunakan proper HTTP methods (GET, POST, PATCH, DELETE)
-- ✅ Struktur project clean dan terorganisir
-- ✅ Dokumentasi lengkap
-
-## Dependencies Utama
-
-```json
-{
-    "laravel/framework": "^11.0",
-    "laravel/sanctum": "^4.0"
-}
-```
-
-## 👨‍💻 Author
-
-Proyek ini dibuat sebagai bagian dari SKL #1 - Part 1
-
-## 📄 License
-
-This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 ---
 
-**Note**: Pastikan untuk menjalankan `php artisan migrate` dan `php artisan storage:link` sebelum testing API.
-=======
-# QR-Scanner-App
-Requirements  Create an API that can: Validate QR codes Return appropriate responses (valid / invalid / already used) Use proper HTTP methods and status codes Structure the project cleanly and logically Provide clear API documentation (endpoint list &amp; request/response format)
->>>>>>> 2a6a576413f8e5e417683c9418cee33b2350da25
+## Fitur Utama
+
+### Mobile App
+
+- **Modern UI** - Gradient designs, animations, glassmorphism
+- **Event Discovery** - Browse & search events
+- **Ticket Management** - View, reserve, cancel tickets
+- **QR Scanner** - Scan tickets untuk check-in
+- **Profile** - User info & settings
+
+### Backend API
+
+- **Authentication** - Secure token-based (Sanctum)
+- **Role-based Access** - Admin & Attendee permissions
+- **Event Management** - Full CRUD operations
+- **Ticket System** - Reserve, cancel, check-in
+- **QR Validation** - Validate & process check-ins
+- **API Key Security** - Middleware protection
+
+---
+
+## Role Permissions
+
+| Feature                  | Admin | Attendee |
+|--------------------------|-------|----------|
+| Browse Events            | Yes   | Yes      |
+| Create Event             | Yes   | No       |
+| Update Event             | Yes   | No       |
+| Delete Event             | Yes   | No       |
+| Reserve Ticket           | Yes   | Yes      |
+| View My Tickets          | Yes   | Yes      |
+| Cancel Ticket            | Yes   | Yes      |
+| Scan & Check-in          | Yes   | No       |
+| View All Tickets         | Yes   | No       |
+
+---
+
+## Tech Stack Summary
+
+| Layer          | Technology              |
+|----------------|------------------------|
+| Frontend Mobile| Flutter, Provider      |
+| Backend        | Laravel 11             |
+| Database       | MySQL                  |
+| Auth           | Laravel Sanctum        |
+| API Security   | Custom API Key Middleware |
+
+---
+
+## Catatan
+
+- **Android Emulator**: Use `10.0.2.2` untuk akses localhost
+- **iOS Simulator**: Use `localhost` atau `127.0.0.1`
+- **API Key**: Sudah di-config di `.env` untuk mobile
+- **Seeding**: Jalankan `php artisan db:seed` untuk data dummy
+
+---
+
+## License
+
+MIT License

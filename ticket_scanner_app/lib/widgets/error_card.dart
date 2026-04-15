@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/themes/app_theme.dart';
 
 class ErrorCard extends StatelessWidget {
   final String message;
@@ -8,14 +9,12 @@ class ErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer.withValues(alpha: 0.1),
-        border: Border.all(
-            color: theme.colorScheme.error.withValues(alpha: 0.2), width: 1),
+        color: Colors.red.shade50,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.red.shade100, width: 1),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -23,41 +22,56 @@ class ErrorCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: theme.colorScheme.error.withValues(alpha: 0.1),
+              color: Colors.red.shade100,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.info_outline,
-                color: theme.colorScheme.error, size: 20),
+            child: Icon(
+              Icons.error_outline,
+              color: Colors.red.shade600,
+              size: 20,
+            ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'Error Occurred',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.error,
+                const Text(
+                  'Oops! Something went wrong',
+                  style: TextStyle(
+                    color: AppTheme.textPrimary,
                     fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
                 ),
+                const SizedBox(height: 4),
                 Text(
                   message,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.error.withValues(alpha: 0.8),
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 13,
                   ),
                 ),
               ],
             ),
           ),
           if (onDismiss != null) ...[
-            const SizedBox(width: 12),
-            IconButton(
-              onPressed: onDismiss,
-              icon: Icon(Icons.close,
-                  size: 18,
-                  color: theme.colorScheme.error.withValues(alpha: 0.5)),
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: onDismiss,
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.close,
+                  size: 16,
+                  color: Colors.red.shade400,
+                ),
+              ),
             ),
           ],
         ],

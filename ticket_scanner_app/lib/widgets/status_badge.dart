@@ -8,11 +8,11 @@ class StatusBadge extends StatelessWidget {
   Color get _bgColor {
     switch (status) {
       case 'Active':
-        return const Color(0xFFE8F5E9);
+        return const Color(0xFFDCFCE7);
       case 'Checked In':
-        return const Color(0xFFE3F2FD);
+        return const Color(0xFFDBEAFE);
       case 'Canceled':
-        return const Color(0xFFFFEBEE);
+        return const Color(0xFFFEE2E2);
       default:
         return Colors.grey.shade100;
     }
@@ -21,11 +21,11 @@ class StatusBadge extends StatelessWidget {
   Color get _textColor {
     switch (status) {
       case 'Active':
-        return const Color(0xFF2E7D32);
+        return const Color(0xFF16A34A);
       case 'Checked In':
-        return const Color(0xFF1565C0);
+        return const Color(0xFF2563EB);
       case 'Canceled':
-        return const Color(0xFFC62828);
+        return const Color(0xFFDC2626);
       default:
         return Colors.grey.shade700;
     }
@@ -34,35 +34,34 @@ class StatusBadge extends StatelessWidget {
   IconData get _icon {
     switch (status) {
       case 'Active':
-        return Icons.check_circle_outline;
+        return Icons.check_circle;
       case 'Checked In':
-        return Icons.qr_code_scanner;
+        return Icons.qr_code;
       case 'Canceled':
-        return Icons.cancel_outlined;
+        return Icons.cancel;
       default:
-        return Icons.info_outline;
+        return Icons.info;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: _bgColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _textColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(_icon, size: 14, color: _textColor),
-          const SizedBox(width: 5),
+          Icon(_icon, size: 12, color: _textColor),
+          const SizedBox(width: 4),
           Text(
             status,
             style: TextStyle(
               color: _textColor,
-              fontSize: 12,
+              fontSize: 11,
               fontWeight: FontWeight.w600,
             ),
           ),

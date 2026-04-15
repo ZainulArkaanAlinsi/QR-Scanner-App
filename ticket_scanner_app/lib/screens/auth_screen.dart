@@ -88,113 +88,211 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // logo placeholder
-              Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: theme.primaryColor.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.qr_code_scanner, color: theme.primaryColor, size: 36),
-              ),
-              const SizedBox(height: 32),
-
-              // Unified Card
-              Container(
-                width: double.infinity,
-                constraints: const BoxConstraints(maxWidth: 440),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(32),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 40,
-                      offset: const Offset(0, 10),
-                    ),
+      backgroundColor: const Color(0xFFF8FAFC),
+      body: Stack(
+        children: [
+          // Background decorations
+          Positioned(
+            top: -50,
+            right: -50,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    theme.primaryColor.withValues(alpha: 0.1),
+                    theme.primaryColor.withValues(alpha: 0.05),
                   ],
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Custom Tab Bar
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                      child: Stack(
-                        alignment: Alignment.bottomLeft,
-                        children: [
-                          Row(
-                            children: [
-                              _buildTab('Login', 0),
-                              _buildTab('Register', 1),
-                            ],
-                          ),
-                          // Animated Indicator
-                          AnimatedAlign(
-                            duration: const Duration(milliseconds: 200),
-                            alignment: _tabController.index == 0
-                                ? Alignment.bottomLeft
-                                : const Alignment(-0.35, 1.0),
-                            child: Container(
-                              width: 60,
-                              height: 3,
-                              margin: const EdgeInsets.only(left: 30),
-                              decoration: BoxDecoration(
-                                color: theme.primaryColor,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                          ),
-                          // Full width gray underline
-                          Container(
-                            height: 1,
-                            width: double.infinity,
-                            color: Colors.grey.withValues(alpha: 0.05),
-                          ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -30,
+            left: -30,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.orange.withValues(alpha: 0.1),
+                    Colors.orange.withValues(alpha: 0.05),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Floating shapes
+          Positioned(
+            top: 100,
+            left: 30,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: theme.primaryColor.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 150,
+            right: 40,
+            child: Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Logo with gradient background
+                  Container(
+                    width: 90,
+                    height: 90,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          theme.primaryColor,
+                          theme.primaryColor.withValues(alpha: 0.7),
                         ],
                       ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.primaryColor.withValues(alpha: 0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
                     ),
+                    child: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 42),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Ticket Scanner',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: theme.primaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Scan & Manage Events',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
 
-                    // Form Content
-                    Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 250),
-                        transitionBuilder: (Widget child, Animation<double> animation) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: SlideTransition(
-                              position: Tween<Offset>(
-                                begin: const Offset(0, 0.05),
-                                end: Offset.zero,
-                              ).animate(animation),
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: _tabController.index == 0 ? _buildLoginForm() : _buildRegisterForm(),
-                      ),
+                  // Unified Card
+                  Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(maxWidth: 440),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(32),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 40,
+                          offset: const Offset(0, 20),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Custom Tab Bar
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                          child: Stack(
+                            alignment: Alignment.bottomLeft,
+                            children: [
+                              Row(
+                                children: [
+                                  _buildTab('Login', 0),
+                                  _buildTab('Register', 1),
+                                ],
+                              ),
+                              // Animated Indicator
+                              AnimatedAlign(
+                                duration: const Duration(milliseconds: 200),
+                                alignment: _tabController.index == 0
+                                    ? Alignment.bottomLeft
+                                    : const Alignment(-0.35, 1.0),
+                                child: Container(
+                                  width: 60,
+                                  height: 3,
+                                  margin: const EdgeInsets.only(left: 30),
+                                  decoration: BoxDecoration(
+                                    color: theme.primaryColor,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                              ),
+                              // Full width gray underline
+                              Container(
+                                height: 1,
+                                width: double.infinity,
+                                color: Colors.grey.withValues(alpha: 0.05),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Form Content
+                        Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 250),
+                            transitionBuilder: (Widget child, Animation<double> animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: const Offset(0, 0.05),
+                                    end: Offset.zero,
+                                  ).animate(animation),
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: _tabController.index == 0 ? _buildLoginForm() : _buildRegisterForm(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  Text(
+                    '© 2026 Ticket Scanner',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                ],
               ),
-              
-              const SizedBox(height: 32),
-              Text(
-                '© 2026 Ticket Scanner. Modern Event Management.',
-                style: theme.textTheme.bodySmall,
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

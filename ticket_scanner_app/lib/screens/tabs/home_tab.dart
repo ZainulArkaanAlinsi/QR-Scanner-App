@@ -38,209 +38,265 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      body: SafeArea(
-        child: Consumer<EventProvider>(
-          builder: (_, ep, __) {
-            final filteredEvents = ep.events.where((e) {
-              return e.name.toLowerCase().contains(_query) ||
-                  e.desc.toLowerCase().contains(_query);
-            }).toList();
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              theme.primaryColor.withValues(alpha: 0.05),
+              Colors.white,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Consumer<EventProvider>(
+            builder: (_, ep, __) {
+              final filteredEvents = ep.events.where((e) {
+                return e.name.toLowerCase().contains(_query) ||
+                    e.desc.toLowerCase().contains(_query);
+              }).toList();
 
-            return RefreshIndicator(
-              onRefresh: ep.fetchEvents,
-              color: Theme.of(context).primaryColor,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Top Bar (Role-Based)
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(Const.padding, 16, Const.padding, 24),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                context.watch<AuthProvider>().isAdmin 
-                                  ? 'System Dashboard' 
-                                  : 'Explore Events',
-                                style: Theme.of(context).textTheme.headlineSmall,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                context.watch<AuthProvider>().isAdmin
-                                  ? "Global event management and monitoring"
-                                  : "Find the best experiences around you",
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
+              return RefreshIndicator(
+                onRefresh: ep.fetchEvents,
+                color: theme.primaryColor,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Top Bar with gradient background
+                      Container(
+                        padding: EdgeInsets.fromLTRB(Const.padding, 16, Const.padding, 24),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              theme.primaryColor,
+                              theme.primaryColor.withValues(alpha: 0.8),
                             ],
                           ),
-                          context.watch<AuthProvider>().isAdmin 
-                            ? Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(Icons.security, color: Theme.of(context).primaryColor, size: 22),
-                              )
-                            : _buildWishlistBadge(ep.bookmarkedIds.length),
-                        ],
-                      ),
-                    ),
-
-                    // Featured Carousel (only if no active search)
-                    if (_query.isEmpty && ep.events.isNotEmpty) ...[
-                      FeaturedCarousel(
-                        events: ep.events,
-                        onTap: (event) => context.push('/event/${event.id}'),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: Const.padding),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Search Bar
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(Const.radius),
-                              border: Border.all(color: Colors.grey.shade200),
-                            ),
-                            child: TextField(
-                              controller: _searchCtrl,
-                              decoration: InputDecoration(
-                                hintText: 'Search events...',
-                                prefixIcon: const Icon(Icons.search),
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                                suffixIcon: _query.isNotEmpty
-                                    ? IconButton(
-                                        icon: const Icon(Icons.clear, size: 20),
-                                        onPressed: () => _searchCtrl.clear(),
-                                      )
-                                    : null,
-                              ),
-                            ),
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(32),
+                            bottomRight: Radius.circular(32),
                           ),
-                          const SizedBox(height: 32),
-
-                          if (ep.error != null) ...[
-                            ErrorCard(message: ep.error!, onDismiss: ep.clearError),
-                            const SizedBox(height: 16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.primaryColor.withValues(alpha: 0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
                           ],
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                _query.isEmpty ? 'Trending Now' : 'Search Results',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              if (_query.isEmpty)
-                                TextButton(
-                                  onPressed: () {},
-                                  child: const Text('See All'),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      context.watch<AuthProvider>().isAdmin 
+                                        ? 'Dashboard' 
+                                        : 'Hello, Traveler!',
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      context.watch<AuthProvider>().isAdmin
+                                        ? 'Event Management' 
+                                        : 'Discover Amazing Events',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-
-                          if (ep.isLoading && ep.events.isEmpty)
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(40),
-                                child: CircularProgressIndicator(color: Theme.of(context).primaryColor),
-                              ),
-                            )
-                          else if (filteredEvents.isEmpty)
-                            Center(
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 60),
-                                  Icon(Icons.search_off, size: 80, color: Colors.grey.shade200),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    _query.isEmpty ? 'No events available' : 'No matches for "$_query"',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Colors.grey.shade500,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: context.watch<AuthProvider>().isAdmin 
+                                    ? const Icon(Icons.admin_panel_settings, color: Colors.white, size: 22)
+                                    : Icon(Icons.favorite_border, color: Colors.white, size: 22),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            // Search Bar
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
                                   ),
                                 ],
                               ),
-                            )
-                          else
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: filteredEvents.length,
-                              separatorBuilder: (context, index) => const SizedBox(height: 16),
-                              itemBuilder: (context, index) {
-                                final event = filteredEvents[index];
-                                return EventTile(
-                                  event: event,
-                                  onTap: () => context.push('/event/${event.id}'),
-                                );
-                              },
+                              child: TextField(
+                                controller: _searchCtrl,
+                                decoration: InputDecoration(
+                                  hintText: 'Search events...',
+                                  hintStyle: TextStyle(color: Colors.grey.shade400),
+                                  prefixIcon: Icon(Icons.search, color: theme.primaryColor),
+                                  suffixIcon: _query.isNotEmpty
+                                      ? IconButton(
+                                          icon: const Icon(Icons.clear, size: 20),
+                                          onPressed: () => _searchCtrl.clear(),
+                                        )
+                                      : null,
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                                ),
+                              ),
                             ),
-                          const SizedBox(height: 32),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+
+                      const SizedBox(height: 24),
+
+                      // Featured Carousel (only if no active search)
+                      if (_query.isEmpty && ep.events.isNotEmpty) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            children: [
+                              Icon(Icons.auto_awesome, color: theme.primaryColor, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Featured Events',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        FeaturedCarousel(
+                          events: ep.events,
+                          onTap: (event) => context.push('/event/${event.id}'),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: Const.padding),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (ep.error != null) ...[
+                              ErrorCard(message: ep.error!, onDismiss: ep.clearError),
+                              const SizedBox(height: 16),
+                            ],
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  _query.isEmpty ? 'All Events' : 'Search Results',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: theme.primaryColor.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    '${filteredEvents.length} events',
+                                    style: TextStyle(
+                                      color: theme.primaryColor,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+
+                            if (ep.isLoading && ep.events.isEmpty)
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(40),
+                                  child: Column(
+                                    children: [
+                                      CircularProgressIndicator(color: theme.primaryColor),
+                                      const SizedBox(height: 16),
+                                      Text('Loading events...', style: TextStyle(color: Colors.grey.shade400)),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            else if (filteredEvents.isEmpty)
+                              Center(
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 60),
+                                    Container(
+                                      padding: const EdgeInsets.all(24),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade50,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(Icons.search_off, size: 60, color: Colors.grey.shade200),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      _query.isEmpty ? 'No events available' : 'No matches for "$_query"',
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        color: Colors.grey.shade500,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else
+                              ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: filteredEvents.length,
+                                separatorBuilder: (context, index) => const SizedBox(height: 16),
+                                itemBuilder: (context, index) {
+                                  final event = filteredEvents[index];
+                                  return EventTile(
+                                    event: event,
+                                    onTap: () => context.push('/event/${event.id}'),
+                                  );
+                                },
+                              ),
+                            const SizedBox(height: 32),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _buildWishlistBadge(int count) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.grey.shade100),
-          ),
-          child: Icon(Icons.favorite_border, color: Theme.of(context).primaryColor, size: 22),
-        ),
-        if (count > 0)
-          Positioned(
-            right: -2,
-            top: -2,
-            child: Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.error,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-              ),
-              constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
-              child: Center(
-                child: Text(
-                  count.toString(),
-                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-      ],
     );
   }
 }

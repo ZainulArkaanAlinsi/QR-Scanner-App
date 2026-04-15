@@ -26,36 +26,63 @@ class HomeScreen extends StatelessWidget {
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 20,
-                  offset: const Offset(0, -4),
+                  offset: const Offset(0, -5),
                 ),
               ],
             ),
-            child: NavigationBar(
-              selectedIndex: navCtrl.currentIndex.value,
-              onDestinationSelected: navCtrl.changeIndex,
-              animationDuration: const Duration(milliseconds: 500),
-              backgroundColor: Colors.white,
-              surfaceTintColor: Colors.white,
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              destinations: navCtrl.navItems
-                  .map(
-                    (item) => NavigationDestination(
-                      icon: Icon(item.icon),
-                      selectedIcon: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: navCtrl.navItems.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    final isSelected = navCtrl.currentIndex.value == index;
+                    final theme = Theme.of(context);
+                    
+                    return GestureDetector(
+                      onTap: () => navCtrl.changeIndex(index),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isSelected ? 20 : 12,
+                          vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF6366F1).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(10),
+                          color: isSelected 
+                              ? theme.primaryColor.withValues(alpha: 0.1)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Icon(item.icon, size: 24),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              item.icon,
+                              color: isSelected 
+                                  ? theme.primaryColor
+                                  : Colors.grey.shade400,
+                              size: 24,
+                            ),
+                            if (isSelected) ...[
+                              const SizedBox(width: 8),
+                              Text(
+                                item.title,
+                                style: TextStyle(
+                                  color: theme.primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
-                      label: item.title,
-                    ),
-                  )
-                  .toList(),
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
           )),
     );

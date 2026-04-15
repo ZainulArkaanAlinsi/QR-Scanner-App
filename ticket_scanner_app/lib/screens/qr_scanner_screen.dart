@@ -20,12 +20,22 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   @override
   void initState() {
     super.initState();
+    _requestCameraPermission();
     _ctrl = MobileScannerController(
       facing: CameraFacing.back,
       formats: [BarcodeFormat.qrCode],
       detectionSpeed: DetectionSpeed.noDuplicates,
     );
     context.read<TicketProvider>().resetCheckin();
+  }
+
+  Future<void> _requestCameraPermission() async {
+    final status = await Permission.camera.request();
+    if (status.isDenied) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Camera permission is required for QR scanning')),
+      );
+    }
   }
 
   @override
@@ -77,72 +87,86 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   }
 
   void _showResultDialog(TicketProvider tp) {
+    final theme = Theme.of(context);
+    final isSuccess = tp.checkinSuccess;
+    
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: Padding(
-          padding: const EdgeInsets.all(28),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        child: Container(
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Result icon
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: tp.checkinSuccess
-                      ? const Color(0xFFE8F5E9)
-                      : const Color(0xFFFFEBEE),
-                ),
-                child: Icon(
-                  tp.checkinSuccess
-                      ? Icons.check_circle_outline
-                      : Icons.cancel_outlined,
-                  size: 48,
-                  color: tp.checkinSuccess
-                      ? const Color(0xFF2E7D32)
-                      : const Color(0xFFC62828),
+              // Animated Result Icon
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.elasticOut,
+                builder: (context, value, child) => Transform.scale(
+                  scale: value,
+                  child: Container(
+                    width: 90,
+                    height: 90,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: isSuccess 
+                            ? [const Color(0xFF22C55E), const Color(0xFF16A34A)]
+                            : [const Color(0xFFEF4444), const Color(0xFFDC2626)],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: (isSuccess ? Colors.green : Colors.red).withValues(alpha: 0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      isSuccess ? Icons.check : Icons.close,
+                      size: 48,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 20),
               Text(
-                tp.checkinSuccess ? 'Check-In Successful!' : 'Check-In Failed',
+                isSuccess ? 'Check-In Success!' : 'Check-In Failed',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: tp.checkinSuccess
-                      ? const Color(0xFF2E7D32)
-                      : const Color(0xFFC62828),
+                  color: isSuccess ? const Color(0xFF22C55E) : const Color(0xFFEF4444),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
                 tp.checkinMessage ?? '',
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
                 textAlign: TextAlign.center,
               ),
-              // Show ticket info if success
-              if (tp.checkinSuccess && tp.checkinTicket != null) ...[
-                const SizedBox(height: 16),
+              if (isSuccess && tp.checkinTicket != null) ...[
+                const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(12),
+                    color: theme.primaryColor.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: theme.primaryColor.withValues(alpha: 0.1)),
                   ),
                   child: Column(
                     children: [
-                      _InfoRow(
-                          label: 'Ticket ID',
-                          value: tp.checkinTicket!.id.substring(0, 12)),
-                      _InfoRow(
-                          label: 'Check-in Time',
-                          value: tp.checkinTicket!.checkedAt != null
-                              ? _formatTime(tp.checkinTicket!.checkedAt!)
-                              : 'Just now'),
+                      _InfoRow(label: 'Ticket ID', value: '#${tp.checkinTicket!.id.substring(0, 8).toUpperCase()}'),
+                      const Divider(height: 16),
+                      _InfoRow(label: 'Check-in Time', value: tp.checkinTicket!.checkedAt != null ? _formatTime(tp.checkinTicket!.checkedAt!) : 'Just now'),
                     ],
                   ),
                 ),
@@ -157,30 +181,46 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                         context.go('/home');
                       },
                       style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        foregroundColor: theme.primaryColor,
+                        side: BorderSide(color: theme.primaryColor.withValues(alpha: 0.3)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text('Go Home'),
+                      child: const Text('Go Home', style: TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [theme.primaryColor, theme.primaryColor.withValues(alpha: 0.8)],
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.primaryColor.withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                       ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        tp.resetCheckin();
-                        setState(() => _isProcessing = false);
-                        _ctrl?.start();
-                      },
-                      child: const Text('Scan Again'),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: Colors.white,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          tp.resetCheckin();
+                          setState(() => _isProcessing = false);
+                          _ctrl?.start();
+                        },
+                        child: const Text('Scan Again', style: TextStyle(fontWeight: FontWeight.w600)),
+                      ),
                     ),
                   ),
                 ],
@@ -201,30 +241,9 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text('Scan Ticket QR',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () => context.go('/home'),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              _torchOn ? Icons.flash_on : Icons.flash_off,
-              color: _torchOn ? Colors.yellow : Colors.white,
-            ),
-            onPressed: () {
-              _ctrl?.toggleTorch();
-              setState(() => _torchOn = !_torchOn);
-            },
-            tooltip: 'Toggle Flashlight',
-          ),
-        ],
-      ),
       body: Stack(
         children: [
           // Camera
@@ -233,42 +252,152 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             onDetect: _onDetect,
           ),
 
+          // Gradient overlay top
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 140,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.7),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          
+          // App Bar
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => context.go('/home'),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      'Scan Ticket',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    const SizedBox(width: 40),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
           // Overlay UI
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Scan frame
+                // Scan frame with glow
                 Container(
-                  width: 250,
-                  height: 250,
+                  width: 260,
+                  height: 260,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white, width: 2),
-                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1),
+                    borderRadius: BorderRadius.circular(24),
                   ),
-                  child: const Stack(
+                  child: Stack(
                     children: [
                       // Corner decorations
                       _Corner(top: true, left: true),
                       _Corner(top: true, left: false),
                       _Corner(top: false, left: true),
                       _Corner(top: false, left: false),
+                      // Animated scan line
+                      if (!_isProcessing)
+                        _AnimatedScanLine(),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+                // Status text
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: _isProcessing 
+                        ? Colors.orange.withValues(alpha: 0.9)
+                        : Colors.black.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_isProcessing) ...[
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                      ] else
+                        Icon(
+                          Icons.qr_code_scanner,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _isProcessing
+                            ? 'Processing...'
+                            : 'Point at ticket QR code',
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.6),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Text(
-                    _isProcessing
-                        ? 'Processing...'
-                        : 'Point camera at a ticket QR code',
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                // Torch button
+                GestureDetector(
+                  onTap: () {
+                    _ctrl?.toggleTorch();
+                    setState(() => _torchOn = !_torchOn);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: _torchOn 
+                          ? Colors.yellow.withValues(alpha: 0.3)
+                          : Colors.white.withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: _torchOn ? Colors.yellow : Colors.white.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Icon(
+                      _torchOn ? Icons.flash_on : Icons.flash_off,
+                      color: _torchOn ? Colors.yellow : Colors.white,
+                      size: 28,
+                    ),
                   ),
                 ),
               ],
@@ -278,7 +407,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
           // Processing overlay
           if (_isProcessing)
             Container(
-              color: Colors.black.withValues(alpha: 0.4),
+              color: Colors.black.withValues(alpha: 0.5),
               child: const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -287,7 +416,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                     SizedBox(height: 16),
                     Text(
                       'Checking ticket...',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -389,6 +518,64 @@ class _CornerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_) => false;
+}
+
+/// Animated scan line widget
+class _AnimatedScanLine extends StatefulWidget {
+  const _AnimatedScanLine();
+
+  @override
+  State<_AnimatedScanLine> createState() => _AnimatedScanLineState();
+}
+
+class _AnimatedScanLineState extends State<_AnimatedScanLine>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0.1, end: 0.9).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Positioned(
+          top: 260 * _animation.value,
+          left: 16,
+          right: 16,
+          child: Container(
+            height: 3,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.transparent,
+                  theme.primaryColor.withValues(alpha: 0.8),
+                  Colors.transparent,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _InfoRow extends StatelessWidget {

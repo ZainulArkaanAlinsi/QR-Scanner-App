@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../models/event_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../models/event_model.dart';
+import '../core/utils/url_helper.dart';
 
 class FeaturedCarousel extends StatelessWidget {
   final List<EventModel> events;
@@ -23,6 +24,8 @@ class FeaturedCarousel extends StatelessWidget {
         itemCount: events.length > 5 ? 5 : events.length,
         itemBuilder: (context, index) {
           final event = events[index];
+          final imageUrl = UrlHelper.normalize(event.images.isNotEmpty ? event.images.first : null);
+          
           return GestureDetector(
             onTap: () => onTap(event),
             child: AnimatedContainer(
@@ -46,9 +49,9 @@ class FeaturedCarousel extends StatelessWidget {
                     // Image
                     Hero(
                       tag: 'event-image-${event.id}-featured',
-                      child: event.images.isNotEmpty
+                      child: imageUrl.isNotEmpty
                           ? CachedNetworkImage(
-                              imageUrl: event.images.first,
+                              imageUrl: imageUrl,
                               fit: BoxFit.cover,
                             )
                           : Container(color: Theme.of(context).primaryColor),

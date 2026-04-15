@@ -18,11 +18,11 @@ class TicketService {
     return await ApiClient.patch('/ticket/$ticketId/cancel');
   }
 
-  /// PATCH /checkin — check in by QR code (admin)
+  /// POST /ticket/checkin — check in by QR code (admin)
   /// [code] = the full QR code string scanned from camera
   static Future<ApiResponse> checkinTicket(String code) async {
-    return await ApiClient.patch(
-      '/checkin',
+    return await ApiClient.post(
+      '/ticket/checkin',
       body: {'code': code},
     );
   }

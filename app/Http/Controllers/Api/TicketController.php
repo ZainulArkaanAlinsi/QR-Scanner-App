@@ -49,8 +49,6 @@ class TicketController extends Controller
             DB::rollBack();
             return $this->errorResponse('Event is full', 400);
         }
-        
-          
 
         $payload = [
             'un' => $user->id,

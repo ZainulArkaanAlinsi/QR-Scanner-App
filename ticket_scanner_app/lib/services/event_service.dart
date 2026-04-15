@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import '../core/api_client.dart';
 import '../models/api_response.dart';
 import '../models/event_model.dart';
@@ -16,14 +18,48 @@ class EventService {
   }
 
   /// POST /event — create event (admin)
-  static Future<ApiResponse> storeEvent(Map<String, dynamic> data) async {
-    return await ApiClient.post('/event', body: data);
+  static Future<ApiResponse> storeEvent(Map<String, dynamic> data, List<File> images) async {
+    final body = <String, String>{};
+    final files = <http.MultipartFile>[];
+
+    data.forEach((key, value) {
+      body[key] = value.toString();
+    });
+
+    for (int i = 0; i < images.length; i++) {
+      final bytes = await images[i].readAsBytes();
+      final filename = images[i].path.split('/').last;
+      files.add(http.MultipartFile.fromBytes(
+        'images[]',
+        bytes,
+        filename: filename,
+      ));
+    }
+
+    return await ApiClient.postMultipart('/event', body: body, files: files);
   }
 
   /// POST /event/{id} — update event (admin)
   static Future<ApiResponse> updateEvent(
-      String eventId, Map<String, dynamic> data) async {
-    return await ApiClient.post('/event/$eventId', body: data);
+      String eventId, Map<String, dynamic> data, List<File> images) async {
+    final body = <String, String>{};
+    final files = <http.MultipartFile>[];
+
+    data.forEach((key, value) {
+      body[key] = value.toString();
+    });
+
+    for (int i = 0; i < images.length; i++) {
+      final bytes = await images[i].readAsBytes();
+      final filename = images[i].path.split('/').last;
+      files.add(http.MultipartFile.fromBytes(
+        'images[]',
+        bytes,
+        filename: filename,
+      ));
+    }
+
+    return await ApiClient.postMultipart('/event/$eventId', body: body, files: files);
   }
 
   /// DELETE /event/{id} — delete event (admin)

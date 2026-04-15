@@ -6,6 +6,10 @@
     <!-- Camera Permission for QR Scanner -->
     <uses-permission android:name="android.permission.CAMERA"/>
 
+    <!-- Image Picker Permissions -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+
     <application
         android:label="ticket_scanner_app"
         android:name="${applicationName}"

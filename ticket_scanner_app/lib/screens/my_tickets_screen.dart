@@ -61,6 +61,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
   }
 
   void _showQr(BuildContext context, TicketModel ticket) {
+    final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -78,12 +79,12 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
                   borderRadius: BorderRadius.circular(2)),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Your QR Code',
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A237E)),
+                  color: theme.primaryColor),
             ),
             const SizedBox(height: 6),
             Text(
@@ -95,11 +96,11 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
               data: ticket.code,
               version: QrVersions.auto,
               size: 220,
-              eyeStyle: const QrEyeStyle(
-                  eyeShape: QrEyeShape.square, color: Color(0xFF1A237E)),
-              dataModuleStyle: const QrDataModuleStyle(
+              eyeStyle: QrEyeStyle(
+                  eyeShape: QrEyeShape.square, color: theme.primaryColor),
+              dataModuleStyle: QrDataModuleStyle(
                   dataModuleShape: QrDataModuleShape.square,
-                  color: Color(0xFF1A237E)),
+                  color: theme.primaryColor),
             ),
             const SizedBox(height: 16),
             StatusBadge(status: ticket.statusLabel),
@@ -112,10 +113,11 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A237E),
+        backgroundColor: theme.primaryColor,
         title: const Text('My Tickets',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         leading: IconButton(
@@ -126,11 +128,11 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
       body: Consumer<TicketProvider>(
         builder: (_, tp, __) {
           if (tp.isLoading && tp.myTickets.isEmpty) {
-            return const Center(
-                child: CircularProgressIndicator(color: Color(0xFF1A237E)));
+            return Center(
+                child: CircularProgressIndicator(color: theme.primaryColor));
           }
           return RefreshIndicator(
-            color: const Color(0xFF1A237E),
+            color: theme.primaryColor,
             onRefresh: tp.fetchMyTickets,
             child: CustomScrollView(
               slivers: [
@@ -192,6 +194,7 @@ class _TicketCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
@@ -213,7 +216,7 @@ class _TicketCard extends StatelessWidget {
             height: 100,
             decoration: BoxDecoration(
               color: ticket.isActive
-                  ? const Color(0xFF1A237E)
+                  ? theme.primaryColor
                   : ticket.isCanceled
                       ? Colors.red.shade300
                       : Colors.blue.shade400,
@@ -237,7 +240,7 @@ class _TicketCard extends StatelessWidget {
                           icon: const Icon(Icons.qr_code, size: 16),
                           label: const Text('QR'),
                           style: TextButton.styleFrom(
-                            foregroundColor: const Color(0xFF1A237E),
+                            foregroundColor: theme.primaryColor,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -248,10 +251,10 @@ class _TicketCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     'Ticket #${ticket.id.substring(0, 8)}...',
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
-                        color: Color(0xFF1A237E)),
+                        color: theme.primaryColor),
                   ),
                   const SizedBox(height: 4),
                   Text(

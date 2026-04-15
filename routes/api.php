@@ -10,7 +10,7 @@ use App\Http\Middleware\RoleMiddleware;
 
 
 
-Route::middleware(['apikey'])->group(function () {
+Route::middleware(['apiKey'])->group(function () {
     
     // Public Routes
     Route::group([],function(   ){

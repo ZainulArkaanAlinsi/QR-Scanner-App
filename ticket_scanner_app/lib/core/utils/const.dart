@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:ticket_scanner_app/env/env.dart';
 
 class Const {
@@ -18,4 +19,7 @@ class Const {
   static double get padding => 20.0;
   static double get radius => 16.0;
   static double get cardElevation => 0.0;
+  
+  // Brand Colors
+  static get primaryColor => const Color(0xFF6366F1);
 }

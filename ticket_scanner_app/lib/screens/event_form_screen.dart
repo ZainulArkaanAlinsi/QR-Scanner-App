@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import '../providers/event_provider.dart';
 
 class EventFormScreen extends StatefulWidget {
@@ -19,6 +21,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
   final _dateCtrl = TextEditingController();
   final _maxReservedCtrl = TextEditingController();
   DateTime? _selectedDate;
+  final List<File> _selectedImages = [];
 
   @override
   void initState() {
@@ -81,6 +84,22 @@ class _EventFormScreenState extends State<EventFormScreen> {
     }
   }
 
+  Future<void> _pickImages() async {
+    final picker = ImagePicker();
+    final pickedFiles = await picker.pickMultiImage();
+    if (pickedFiles.isNotEmpty) {
+      setState(() {
+        _selectedImages.addAll(pickedFiles.map((xFile) => File(xFile.path)));
+      });
+    }
+  }
+
+  void _removeImage(int index) {
+    setState(() {
+      _selectedImages.removeAt(index);
+    });
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedDate == null) {
@@ -100,9 +119,15 @@ class _EventFormScreenState extends State<EventFormScreen> {
     final ep = context.read<EventProvider>();
     bool success;
     if (widget.eventId == null) {
-      success = await ep.createEvent(data);
+      if (_selectedImages.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select at least one image')),
+        );
+        return;
+      }
+      success = await ep.createEvent(data, _selectedImages);
     } else {
-      success = await ep.updateEvent(widget.eventId!, data);
+      success = await ep.updateEvent(widget.eventId!, data, _selectedImages);
     }
 
     if (success && mounted) {
@@ -173,6 +198,10 @@ class _EventFormScreenState extends State<EventFormScreen> {
                 keyboardType: TextInputType.number,
                 hint: 'e.g. 100',
               ),
+              const SizedBox(height: 24),
+              _buildSectionTitle('Event Images'),
+              const SizedBox(height: 16),
+              _buildImageSelector(),
               const SizedBox(height: 40),
               
               SizedBox(
@@ -254,6 +283,93 @@ class _EventFormScreenState extends State<EventFormScreen> {
         ),
       ),
       validator: (v) => v == null || v.isEmpty ? 'This field is required' : null,
+    );
+  }
+
+  Widget _buildImageSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: _pickImages,
+                icon: const Icon(Icons.add_photo_alternate),
+                label: const Text('Select Images'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade100,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (_selectedImages.isNotEmpty)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _selectedImages.asMap().entries.map((entry) {
+              final index = entry.key;
+              final image = entry.value;
+              return Stack(
+                children: [
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      image: DecorationImage(
+                        image: FileImage(image),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: GestureDetector(
+                      onTap: () => _removeImage(index),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          ),
+        if (_selectedImages.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: const Center(
+              child: Text(
+                'No images selected. Please select at least one image.',
+                style: TextStyle(color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

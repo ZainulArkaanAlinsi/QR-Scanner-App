@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/event_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../widgets/event_tile.dart';
 import '../../widgets/error_card.dart';
 import '../../widgets/featured_carousel.dart';
@@ -54,7 +55,7 @@ class _HomeTabState extends State<HomeTab> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Top Bar
+                    // Top Bar (Role-Based)
                     Padding(
                       padding: EdgeInsets.fromLTRB(Const.padding, 16, Const.padding, 24),
                       child: Row(
@@ -64,17 +65,30 @@ class _HomeTabState extends State<HomeTab> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Explore Events',
+                                context.watch<AuthProvider>().isAdmin 
+                                  ? 'System Dashboard' 
+                                  : 'Explore Events',
                                 style: Theme.of(context).textTheme.headlineSmall,
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                "Find the best experiences around you",
+                                context.watch<AuthProvider>().isAdmin
+                                  ? "Global event management and monitoring"
+                                  : "Find the best experiences around you",
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
                           ),
-                          _buildWishlistBadge(ep.bookmarkedIds.length),
+                          context.watch<AuthProvider>().isAdmin 
+                            ? Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.security, color: Theme.of(context).primaryColor, size: 22),
+                              )
+                            : _buildWishlistBadge(ep.bookmarkedIds.length),
                         ],
                       ),
                     ),

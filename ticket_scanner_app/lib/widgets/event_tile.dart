@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import '../models/event_model.dart';
 import '../providers/event_provider.dart';
 
+import '../core/utils/url_helper.dart';
+
 class EventTile extends StatelessWidget {
   final EventModel event;
   final VoidCallback? onTap;
@@ -18,6 +20,7 @@ class EventTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateStr = DateFormat('dd MMM yyyy').format(event.date);
+    final imageUrl = UrlHelper.normalize(event.images.isNotEmpty ? event.images.first : null);
 
     return Card(
       child: InkWell(
@@ -36,9 +39,9 @@ class EventTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       child: Hero(
                         tag: 'event-image-${event.id}',
-                        child: event.images.isNotEmpty
+                        child: imageUrl.isNotEmpty
                             ? CachedNetworkImage(
-                                imageUrl: event.images.first,
+                                imageUrl: imageUrl,
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => Container(
                                   color: Colors.grey.shade100,

@@ -13,7 +13,8 @@ class ErrorCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.errorContainer.withValues(alpha: 0.1),
-        border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.2), width: 1),
+        border: Border.all(
+            color: theme.colorScheme.error.withValues(alpha: 0.2), width: 1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -25,7 +26,8 @@ class ErrorCard extends StatelessWidget {
               color: theme.colorScheme.error.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.info_outline, color: theme.colorScheme.error, size: 20),
+            child: Icon(Icons.info_outline,
+                color: theme.colorScheme.error, size: 20),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -53,7 +55,9 @@ class ErrorCard extends StatelessWidget {
             const SizedBox(width: 12),
             IconButton(
               onPressed: onDismiss,
-              icon: Icon(Icons.close, size: 18, color: theme.colorScheme.error.withValues(alpha: 0.5)),
+              icon: Icon(Icons.close,
+                  size: 18,
+                  color: theme.colorScheme.error.withValues(alpha: 0.5)),
             ),
           ],
         ],

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
 import '../services/event_service.dart';
@@ -39,11 +40,11 @@ class EventProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
-  Future<bool> createEvent(Map<String, dynamic> data) async {
+  Future<bool> createEvent(Map<String, dynamic> data, List<File> images) async {
     _setLoading(true);
     _error = null;
 
-    final res = await EventService.storeEvent(data);
+    final res = await EventService.storeEvent(data, images);
     if (res.isSuccess) {
       await fetchEvents(); // Refresh list
       _setLoading(false);
@@ -55,11 +56,11 @@ class EventProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> updateEvent(String eventId, Map<String, dynamic> data) async {
+  Future<bool> updateEvent(String eventId, Map<String, dynamic> data, List<File> images) async {
     _setLoading(true);
     _error = null;
 
-    final res = await EventService.updateEvent(eventId, data);
+    final res = await EventService.updateEvent(eventId, data, images);
     if (res.isSuccess) {
       await fetchEvents(); // Refresh list
       _setLoading(false);

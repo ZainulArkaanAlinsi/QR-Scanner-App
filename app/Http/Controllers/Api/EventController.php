@@ -20,7 +20,7 @@ class EventController extends Controller
             'description' => 'required|string',
             'images' => 'required|array|min:1',
             'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
-            'date' => 'required|date',
+            'date' => 'required|date|after_or_equal:today',
             'max_reservation' => 'required|integer|min:1',
         ]);
 
@@ -39,10 +39,10 @@ class EventController extends Controller
     public function index()
     {
         $events = Event::withCount([
-            'tickets_count' => function ($query) {
+            'tickets as tickets_count' => function ($query) {
                 $query->where('is_canceled', false);
             },
-        ]   )->latest()->get();
+        ])->latest()->get();
         return $this->successResponse($events, 'Events retrieved successfully',200 );
     }
 
@@ -50,7 +50,7 @@ class EventController extends Controller
     public function show($id)
     {
         $event = Event::withCount([
-            'tickets_count' => function ($query) {
+            'tickets as tickets_count' => function ($query) {
                 $query->where('is_canceled', false);
             },
         ])->find($id);          

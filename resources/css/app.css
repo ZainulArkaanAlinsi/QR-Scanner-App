@@ -6,58 +6,107 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Geist', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-    /* Tech-Focused Solid Palette (Zinc/Slate) */
-    --color-brand-primary: #3b82f6;
-    --color-brand-success: #22c55e;
-    --color-brand-danger: #ef4444;
+    /* Theme Variables (Semantic Tokens) */
+    --color-brand-primary: var(--brand-primary);
+    --color-brand-success: var(--brand-success);
+    --color-brand-danger: var(--brand-danger);
     
-    --color-bg-main: #09090b;
-    --color-bg-card: #09090b;
-    --color-bg-elevated: #18181b;
-    --color-border-subtle: #27272a;
+    --color-bg-main: var(--bg-main);
+    --color-bg-card: var(--bg-card);
+    --color-bg-elevated: var(--bg-elevated);
+    --color-border-subtle: var(--border-subtle);
     
-    --color-text-dim: #a1a1aa;
-    --color-text-description: #71717a;
-    --color-text-bright: #fafafa;
+    --color-text-dim: var(--text-dim);
+    --color-text-description: var(--text-description);
+    --color-text-bright: var(--text-bright);
 
     --radius-sm: 0.125rem;
-    --radius-md: 0.375rem;
+    --radius-md: 0.25rem;
     --radius-lg: 0.5rem;
     --radius-xl: 0.75rem;
     
     --shadow-precise: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
+:root {
+    /* Light Mode - Clean & Modern (Soft Gray + Emerald) */
+    --brand-primary: #059669; 
+    --brand-success: #10b981; 
+    --brand-danger: #ef4444; 
+
+    --bg-main: #f8f9fa;
+    --bg-card: #ffffff;
+    --bg-elevated: #f1f3f5;
+    --border-subtle: #e9ecef;
+
+    --text-dim: #868e96;
+    --text-description: #adb5bd;
+    --text-bright: #212529;
+}
+
+.dark {
+    /* Dark Mode Palette (Charcoal Emerald) */
+    --brand-primary: #10b981; 
+    --brand-success: #34d399;
+    --brand-danger: #f87171;
+
+    --bg-main: #0a0a0b;       
+    --bg-card: #121214;       
+    --bg-elevated: #1a1a1c;   
+    --border-subtle: #27272a; 
+
+    --text-dim: #a1a1aa;      
+    --text-description: #71717a; 
+    --text-bright: #f4f4f5;     
+}
+
 @layer base {
     body {
-        @apply bg-bg-main text-text-bright antialiased selection:bg-brand-primary selection:text-white;
+        @apply bg-bg-main text-text-bright antialiased selection:bg-emerald-500 selection:text-white transition-colors duration-300 relative min-h-screen;
+    }
+
+    body::before {
+        content: "";
+        @apply fixed inset-0 z-[-1] pointer-events-none opacity-[0.5] dark:opacity-[0.08];
+        background-image: radial-gradient(var(--border-subtle) 0.5px, transparent 0.5px);
+        background-size: 20px 20px;
     }
 }
 
 @layer components {
     .bento-card {
-        @apply bg-bg-card border border-border-subtle rounded-xl flex flex-col overflow-hidden transition-all duration-300 hover:border-brand-primary;
+        @apply bg-white dark:bg-bg-card border border-border-subtle rounded-2xl flex flex-col overflow-hidden transition-all duration-200 relative;
+    }
+
+    .bento-card:hover {
+        @apply border-emerald-200 dark:border-emerald-500/30 shadow-md;
     }
     
     .btn-primary {
-        @apply inline-flex items-center justify-center px-4 py-2 rounded-md font-semibold text-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-50 bg-white text-black hover:bg-zinc-200;
+        @apply inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-50 bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/20;
     }
     
     .btn-secondary {
-        @apply inline-flex items-center justify-center px-4 py-2 rounded-md font-semibold text-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-50 bg-zinc-900 text-white border border-border-subtle hover:bg-zinc-800;
+        @apply inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-50 bg-bg-elevated dark:bg-bg-card text-text-bright border border-border-subtle hover:bg-white dark:hover:bg-bg-elevated;
     }
 
-    .hud-border {
-        @apply border border-brand-primary shadow-[0_0_10px_rgba(59,130,246,0.1)];
+    .technical-label {
+        @apply text-[11px] font-medium uppercase tracking-wide text-text-description;
     }
 
-    .shimmer {
-        @apply relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-zinc-800/10;
+    .dashboard-grid {
+        @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4;
     }
 }
 
 @keyframes shimmer {
     100% { transform: translateX(100%); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.05); }
 }

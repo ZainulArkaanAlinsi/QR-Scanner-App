@@ -1520,13 +1520,13 @@
 </head>
 
 <body
-    class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
+    class="bg-[#FDFDFC] dark:bg-[#1b1b29] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
     <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
         @if (Route::has('login'))
             <nav class="flex items-center justify-end gap-4">
                 @auth
                     <a href="{{ url('/dashboard') }}"
-                        class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
+                        class="inline-block px-8 py-2 font-black transition-all dark:text-white bg-[#24D2AB] dark:bg-[#24D2AB] text-bg-main rounded-full text-xs uppercase tracking-widest shadow-[0_0_15px_rgba(36,210,171,0.4)] hover:scale-105">
                         Dashboard
                     </a>
                 @else
@@ -1549,10 +1549,9 @@
         class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
         <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
             <div
-                class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
-                <h1 class="mb-1 font-medium">Let's get started</h1>
-                <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">Laravel has an incredibly rich ecosystem. <br>We
-                    suggest starting with the following.</p>
+                class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white dark:bg-[#212130] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#24D2AB2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
+                <h1 class="mb-1 font-black text-2xl tracking-tighter uppercase italic">System initialized</h1>
+                <p class="mb-4 text-[#706f6c] dark:text-[#A1A09A] font-medium">Authentication required to access the core telemetry stream and ticket registry.</p>
                 <ul class="flex flex-col mb-4 lg:mb-6">
                     <li
                         class="flex items-center gap-4 py-2 relative before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A] before:top-1/2 before:bottom-0 before:left-[0.4rem] before:absolute">
@@ -1607,9 +1606,9 @@
                 </ul>
             </div>
             <div
-                class="bg-[#fff2f2] dark:bg-[#1D0002] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden">
+                class="bg-[#F0FFF4] dark:bg-[#1B1B29] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-335/376 lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden border border-brand-primary/10">
                 {{-- Laravel Logo --}}
-                <svg class="w-full text-[#F53003] dark:text-[#F61500] transition-all translate-y-0 opacity-100 max-w-none duration-750 starting:opacity-0 starting:translate-y-6"
+                <svg class="w-full text-[#24D2AB] dark:text-[#24D2AB] transition-all translate-y-0 opacity-100 max-w-none duration-750 starting:opacity-0 starting:translate-y-6"
                     viewBox="0 0 438 104" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17.2036 -3H0V102.197H49.5189V86.7187H17.2036V-3Z" fill="currentColor" />
                     <path

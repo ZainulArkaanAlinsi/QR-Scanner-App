@@ -8,6 +8,7 @@ import '../providers/event_provider.dart';
 import '../providers/ticket_provider.dart';
 import '../widgets/error_card.dart';
 import '../core/utils/const.dart';
+import '../core/utils/url_helper.dart';
 
 class EventDetailScreen extends StatefulWidget {
   final String eventId;
@@ -56,6 +57,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       body: Consumer<EventProvider>(
         builder: (_, ep, __) {
           final event = ep.selectedEvent;
+          final imageUrl = UrlHelper.normalize(event?.images.isNotEmpty == true ? event?.images.first : null);
           
           if (ep.isLoading && event == null) {
             return Center(child: CircularProgressIndicator(color: theme.primaryColor));
@@ -110,9 +112,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     children: [
                       Hero(
                         tag: 'event-image-${event.id}',
-                        child: event.images.isNotEmpty
+                        child: imageUrl.isNotEmpty
                             ? CachedNetworkImage(
-                                imageUrl: event.images.first,
+                                imageUrl: imageUrl,
                                 fit: BoxFit.cover,
                               )
                             : Container(color: theme.primaryColor),

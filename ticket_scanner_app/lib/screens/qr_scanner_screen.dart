@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import '../providers/ticket_provider.dart';
 
@@ -20,8 +21,9 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   void initState() {
     super.initState();
     _ctrl = MobileScannerController(
-      detectionSpeed: DetectionSpeed.noDuplicates,
       facing: CameraFacing.back,
+      formats: [BarcodeFormat.qrCode],
+      detectionSpeed: DetectionSpeed.noDuplicates,
     );
     context.read<TicketProvider>().resetCheckin();
   }
@@ -128,7 +130,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF5F7FF),
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -166,7 +168,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1A237E),
+                        backgroundColor: Theme.of(context).primaryColor,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
@@ -309,7 +311,7 @@ class _Corner extends StatelessWidget {
     const size = 28.0;
     const thickness = 4.0;
     const radius = 12.0;
-    const color = Color(0xFF1A237E);
+    final color = Theme.of(context).primaryColor;
     return Positioned(
       top: top ? -1 : null,
       bottom: top ? null : -1,
